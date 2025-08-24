@@ -12,7 +12,9 @@ import { Home, Sparkles } from "lucide-react";
 interface GenerationState {
   isGenerating: boolean;
   result: {
-    imageUrl: string;
+    imageUrl: string; // final
+    characterUrl?: string;
+    houseUrl?: string;
     houseTheme: string;
     vibe: string;
     pose: string;
@@ -84,6 +86,8 @@ export default function HomePage() {
         isGenerating: false,
         result: {
           imageUrl: result.url,
+          characterUrl: result.characterUrl,
+          houseUrl: result.houseUrl,
           houseTheme: formData.houseTheme,
           vibe: formData.vibe,
           pose: formData.pose,
@@ -207,6 +211,8 @@ export default function HomePage() {
           {/* Result Section */}
           <ResultCard
             imageUrl={generationState.result?.imageUrl || null}
+            characterUrl={generationState.result?.characterUrl || null}
+            houseUrl={generationState.result?.houseUrl || null}
             houseTheme={generationState.result?.houseTheme || ""}
             vibe={generationState.result?.vibe || ""}
             pose={generationState.result?.pose || ""}

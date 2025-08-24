@@ -6,7 +6,9 @@ import { generateCharacter, generateHouse, generateFinalIllustration } from "@/l
 export const runtime = "nodejs";
 
 interface GenerateResponse {
-  url?: string;
+  url?: string; // final
+  characterUrl?: string;
+  houseUrl?: string;
   error?: string;
 }
 
@@ -140,7 +142,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<GenerateR
       console.log('Final illustration generation completed');
 
       return NextResponse.json(
-        { url: finalUrl },
+        { url: finalUrl, characterUrl, houseUrl },
         { status: 200 }
       );
     } catch (error: unknown) {

@@ -7,7 +7,9 @@ import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescript
 import { Download, RefreshCw, Plus, Share2 } from "lucide-react";
 
 interface ResultCardProps {
-  imageUrl: string | null;
+  imageUrl: string | null; // final illustration
+  characterUrl?: string | null;
+  houseUrl?: string | null;
   houseTheme: string;
   vibe: string;
   pose: string;
@@ -20,6 +22,8 @@ interface ResultCardProps {
 
 const ResultCard: React.FC<ResultCardProps> = ({
   imageUrl,
+  characterUrl,
+  houseUrl,
   houseTheme,
   vibe,
   pose,
@@ -99,14 +103,42 @@ const ResultCard: React.FC<ResultCardProps> = ({
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          {/* Generated Image */}
-          <div className="relative bg-muted rounded-lg overflow-hidden">
-            <img
-              src={imageUrl}
-              alt={`Generated illustration: ${houseTheme} with ${vibe} character doing ${pose}`}
-              className="w-full h-auto max-h-96 object-contain mx-auto"
-              loading="lazy"
-            />
+          {/* Image Trio */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Character */}
+            {characterUrl && (
+              <div className="bg-muted rounded-lg overflow-hidden p-2">
+                <p className="text-sm font-medium text-center mb-2">👤 きゃらくたー</p>
+                <img
+                  src={characterUrl}
+                  alt="生成されたキャラクター"
+                  className="w-full h-auto max-h-80 object-contain mx-auto"
+                  loading="lazy"
+                />
+              </div>
+            )}
+            {/* House */}
+            {houseUrl && (
+              <div className="bg-muted rounded-lg overflow-hidden p-2">
+                <p className="text-sm font-medium text-center mb-2">🏠 どりーむはうす</p>
+                <img
+                  src={houseUrl}
+                  alt="生成された家"
+                  className="w-full h-auto max-h-80 object-contain mx-auto"
+                  loading="lazy"
+                />
+              </div>
+            )}
+            {/* Final */}
+            <div className="bg-muted rounded-lg overflow-hidden p-2 md:col-span-1">
+              <p className="text-sm font-medium text-center mb-2">✨ さいしゅういらすと</p>
+              <img
+                src={imageUrl}
+                alt={`Generated illustration: ${houseTheme} with ${vibe} character doing ${pose}`}
+                className="w-full h-auto max-h-80 object-contain mx-auto"
+                loading="lazy"
+              />
+            </div>
           </div>
 
           {/* Image Details */}
