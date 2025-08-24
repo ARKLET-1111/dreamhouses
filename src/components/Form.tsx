@@ -6,8 +6,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import FileDrop from "./FileDrop";
 import { type ValidationError } from "@/lib/validation";
+import FileDrop from "./FileDrop";
 
 export interface FormData {
   houseTheme: string;
@@ -57,7 +57,7 @@ const Form: React.FC<FormProps> = ({ onSubmit, isLoading, disabled = false }) =>
     }
     
     if (!formData.faceImage) {
-      newErrors.push({ field: "faceImage", message: "顔写真をアップロードしてください" });
+      newErrors.push({ field: "faceImage", message: "お顔写真をアップロードしてください" });
     }
     
     if (!formData.agreed) {
@@ -73,18 +73,11 @@ const Form: React.FC<FormProps> = ({ onSubmit, isLoading, disabled = false }) =>
     onSubmit(formData);
   };
 
-  const handleFileSelect = (file: File) => {
-    setFormData(prev => ({ ...prev, faceImage: file }));
-  };
-
-  const handleFileRemove = () => {
-    setFormData(prev => ({ ...prev, faceImage: null }));
-  };
 
   const isFormValid = formData.houseTheme.trim() && 
                      formData.vibe && 
                      formData.pose && 
-                     formData.faceImage && 
+                     formData.faceImage &&
                      formData.agreed;
 
   const getFieldError = (field: string) => {
@@ -134,23 +127,38 @@ const Form: React.FC<FormProps> = ({ onSubmit, isLoading, disabled = false }) =>
               </div>
             </div>
 
-            {/* Face Image Upload */}
+            {/* Face Photo Upload */}
             <div className="space-y-3 bg-gradient-to-r from-pink-100 to-purple-100 p-6 rounded-2xl border-2 border-pink-200">
               <label className="text-lg font-bold text-gray-800 flex items-center gap-2">
-                📷 あなたのお顔写真をアップロード！ 😊
+                📷 あなたのお顔写真をアップロード！
               </label>
               <FileDrop
-                onFileSelect={handleFileSelect}
+                onFileSelect={(file) => setFormData(prev => ({ ...prev, faceImage: file }))}
                 selectedFile={formData.faceImage}
-                onFileRemove={handleFileRemove}
+                onFileRemove={() => setFormData(prev => ({ ...prev, faceImage: null }))}
                 disabled={isLoading || disabled}
+                className="w-full"
               />
               {getFieldError("faceImage") && (
                 <p className="text-sm text-red-500 font-bold">😅 {getFieldError("faceImage")}</p>
               )}
-              <p className="text-sm text-gray-600 font-medium">
-                📸 きれいなお顔写真を選んでね！
-              </p>
+              <div className="bg-yellow-100/70 p-3 rounded-xl border border-yellow-200">
+                <p className="text-sm text-gray-600 font-medium text-center">
+                  🤖 GPT-4があなたの写真を分析して、そっくりなアニメキャラクターを作るよ！
+                </p>
+              </div>
+            </div>
+
+            {/* Character Description */}
+            <div className="space-y-3 bg-gradient-to-r from-cyan-100 to-teal-100 p-6 rounded-2xl border-2 border-cyan-200">
+              <div className="text-center">
+                <p className="text-lg font-bold text-gray-800">
+                  🎨 AIがあなただけの可愛いキャラクターを作ります！
+                </p>
+                <p className="text-sm text-gray-600 font-medium mt-2">
+                  写真の特徴と選んだ雰囲気・ポーズで、オリジナルキャラクターが完成するよ！
+                </p>
+              </div>
             </div>
 
             {/* Character Vibe Selection */}

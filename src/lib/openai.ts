@@ -1,48 +1,124 @@
 import OpenAI from "openai";
 
-if (!process.env.OPENAI_API_KEY) {
-  throw new Error("OPENAI_API_KEY environment variable is required");
-}
-
+// Create OpenAI client with better error handling for Vercel
 export const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: process.env.OPENAI_API_KEY || "fallback-key-will-fail-gracefully",
 });
 
-export const GENERATION_PROMPT_TEMPLATE = `あなたは画像生成のプロフェッショナルです。次の要件を満たす、全年齢向けのアニメ調イラストを1枚生成してください。
-- 実在のロゴ・ブランド・著作物・著名キャラクターの模倣は禁止
-- 顔・指・手足の破綻を避け、自然なポーズと表情にする
-- キャラクターはユーザーの顔写真を参照し、髪型・輪郭・目や眉の形・肌色の特徴を適切に反映
+// Function to check if OpenAI is properly configured
+export function isOpenAIConfigured(): boolean {
+  return !!process.env.OPENAI_API_KEY;
+}
 
-【目的】
-ユーザーの顔写真を参照し、本人の特徴を保ったアニメ調キャラクターを描く。
-舞台は「{{houseTheme}}」の世界。キャラと家が同一世界観で自然に調和する。
+export const GENERATION_PROMPT_TEMPLATE = `Create a charming anime-style illustration featuring a cute character in front of a {{houseTheme}}. The character should have a {{vibe}} personality and be doing {{pose}}.
 
-【スタイル/画風】
-- 日本のセルルックアニメ風。鮮やかでコントラスト強め、軽いハイライト。全年齢向け。
+Style requirements:
+- Japanese anime/manga art style with vibrant colors and soft highlights
+- Family-friendly, all-ages appropriate
+- High quality digital illustration
 
-【テーマ環境（{{houseTheme}}）】
-- 家の素材・質感・装飾が一目で伝わる描写。
-- 例: お菓子の家 → ビスケットの壁、チョコ屋根、キャンディ窓枠、砂糖の小道、砂糖のきらめき。
-- 光源は柔らかな日差し。温かい色温度。
+Character details:
+- Personality: {{vibe}}
+- Pose: {{pose}} (with natural hand positions and proper finger count)
+- Clothing: Simple, logo-free design  
+- Facial features: Large expressive anime eyes, friendly smile
 
-【キャラクター】
-- 雰囲気: {{vibe}}。
-- ポーズ: {{pose}}（腕や指が途切れない自然な形で、指は5本）。
-- 服装: ロゴやブランドは抽象化された無地デザイン。
+Setting ({{houseTheme}}):
+- Detailed architectural elements that clearly represent the theme
+- For candy house: gingerbread walls, chocolate roof, candy decorations
+- For cloud house: fluffy cloud materials, sky-like elements
+- For glass greenhouse: transparent walls, botanical elements
+- Warm, soft lighting with gentle shadows
 
-【画面構成】
-- 解像度: 1024×1024（正方形）
-- 構図: 全身＋家の全景がわかるフレーミング。前景/中景/後景で奥行きを付与。
-- 文字やロゴは入れない。
+Composition:
+- 1024x1024 square format
+- Full body character with complete house visible
+- Foreground, midground, background depth
+- No text or logos
+- Avoid any real brands or copyrighted characters
 
-【品質/禁止事項/補正】
-- 顔の非対称や歯・目・手指の破綻を避ける。輪郭のにじみを抑える。
-- 実在ブランド・著作物の描写は禁止。
-- 仕上げに目のハイライトと髪の立体感を軽く強調。`;
+Quality: High detail, clean lines, professional anime art quality`;
+
+// Function to analyze face photo using GPT-4 Vision
+export async function analyzeFacePhoto(imageBuffer: Buffer): Promise<string> {
+  try {
+    const base64Image = imageBuffer.toString('base64');
+    
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o",
+      messages: [
+        {
+          role: "user",
+          content: [
+            {
+              type: "text",
+              text: "この写真の人の特徴を分析して、アニメキャラクター作成のための詳細な説明を日本語で提供してください。髪型、髪色、目の色、肌の色調、顔の形、表情などの特徴を含めて、優しい子供向けのアニメスタイルに適した表現で説明してください。"
+            },
+            {
+              type: "image_url",
+              image_url: {
+                url: `data:image/jpeg;base64,${base64Image}`,
+                detail: "high"
+              }
+            }
+          ]
+        }
+      ],
+      max_tokens: 300
+    });
+
+    return response.choices[0]?.message?.content || "可愛らしい特徴を持った人";
+  } catch (error) {
+    console.error("Face analysis failed:", error);
+    return "可愛らしい特徴を持った人";
+  }
+}
+
+export const GENERATION_PROMPT_WITH_FACE_TEMPLATE = `Create a charming anime-style illustration featuring a cute character in front of a {{houseTheme}}. The character should have a {{vibe}} personality and be doing {{pose}}.
+
+Character appearance based on the reference photo:
+{{faceDescription}}
+
+Style requirements:
+- Japanese anime/manga art style with vibrant colors and soft highlights
+- Family-friendly, all-ages appropriate
+- High quality digital illustration
+- Character should resemble the described features but in cute anime style
+
+Character details:
+- Personality: {{vibe}}
+- Pose: {{pose}} (with natural hand positions and proper finger count)
+- Clothing: Simple, logo-free design  
+- Facial features: Large expressive anime eyes, friendly smile, incorporating the described characteristics
+- Appearance: Based on the provided description but stylized as cute anime character
+
+Setting ({{houseTheme}}):
+- Detailed architectural elements that clearly represent the theme
+- For candy house: gingerbread walls, chocolate roof, candy decorations
+- For cloud house: fluffy cloud materials, sky-like elements
+- For glass greenhouse: transparent walls, botanical elements
+- Warm, soft lighting with gentle shadows
+
+Composition:
+- 1024x1024 square format
+- Full body character with complete house visible
+- Foreground, midground, background depth
+- No text or logos
+- Avoid any real brands or copyrighted characters
+
+Quality: High detail, clean lines, professional anime art quality`;
 
 export function buildPrompt(houseTheme: string, vibe: string, pose: string): string {
   return GENERATION_PROMPT_TEMPLATE
     .replace(/\{\{houseTheme\}\}/g, houseTheme)
     .replace(/\{\{vibe\}\}/g, vibe)
     .replace(/\{\{pose\}\}/g, pose);
+}
+
+export function buildPromptWithFace(houseTheme: string, vibe: string, pose: string, faceDescription: string): string {
+  return GENERATION_PROMPT_WITH_FACE_TEMPLATE
+    .replace(/\{\{houseTheme\}\}/g, houseTheme)
+    .replace(/\{\{vibe\}\}/g, vibe)
+    .replace(/\{\{pose\}\}/g, pose)
+    .replace(/\{\{faceDescription\}\}/g, faceDescription);
 }

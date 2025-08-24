@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { openai, buildPrompt } from "@/lib/openai";
+import { openai, buildPromptWithFace, analyzeFacePhoto } from "@/lib/openai";
 
 // Simplified validation - removed complex validation imports
 
@@ -11,18 +11,44 @@ interface GenerateResponse {
 }
 
 export async function POST(request: NextRequest): Promise<NextResponse<GenerateResponse>> {
+  console.log('=== API /generate called ===');
+  
   try {
-
+    // Check environment variables first
+    if (!process.env.OPENAI_API_KEY) {
+      console.error('OPENAI_API_KEY is not set');
+      return NextResponse.json(
+        { error: "OpenAI API key is not configured" },
+        { status: 500 }
+      );
+    }
 
     // Parse form data
-    const formData = await request.formData();
+    let formData;
+    try {
+      formData = await request.formData();
+    } catch (error) {
+      console.error('Failed to parse form data:', error);
+      return NextResponse.json(
+        { error: "Invalid form data" },
+        { status: 400 }
+      );
+    }
+
     const houseTheme = formData.get("houseTheme") as string;
     const vibe = formData.get("vibe") as string;
     const pose = formData.get("pose") as string;
     const faceImage = formData.get("faceImage") as File;
 
     // Basic validation
-    console.log('Received data:', { houseTheme, vibe, pose, faceImageName: faceImage?.name });
+    console.log('Received data:', { 
+      houseTheme, 
+      vibe, 
+      pose, 
+      hasFaceImage: !!faceImage,
+      faceImageSize: faceImage?.size || 0,
+      hasOpenAIKey: !!process.env.OPENAI_API_KEY
+    });
 
     if (!houseTheme || houseTheme.trim().length === 0) {
       console.log('House theme validation failed');
@@ -74,33 +100,57 @@ export async function POST(request: NextRequest): Promise<NextResponse<GenerateR
       );
     }
 
-    // Convert image to buffer (not used in current implementation but kept for future use)
-    // const imageBuffer = Buffer.from(await faceImage.arrayBuffer());
+    // Convert image to buffer for analysis
+    const imageBuffer = Buffer.from(await faceImage.arrayBuffer());
+    
+    console.log('Analyzing face photo with GPT-4 Vision...');
+    // Analyze face photo with GPT-4 Vision
+    const faceDescription = await analyzeFacePhoto(imageBuffer);
+    console.log('Face analysis completed:', faceDescription.substring(0, 100) + '...');
 
-    // Build the prompt
-    const prompt = buildPrompt(houseTheme, vibe, pose);
+    // Build the prompt with face description
+    const prompt = buildPromptWithFace(houseTheme, vibe, pose, faceDescription);
 
     console.log(`Generating image for theme: "${houseTheme}" with vibe: "${vibe}" and pose: "${pose}"`);
 
     // Generate image with OpenAI
+    console.log('Calling OpenAI API...');
     let response;
     try {
-      // Note: The actual OpenAI API may not support gpt-image-1 model yet
-      // This is a placeholder implementation based on the requirements
       response = await openai.images.generate({
-        model: "dall-e-3", // Using dall-e-3 as gpt-image-1 may not be available
+        model: "dall-e-3",
         prompt: prompt,
         n: 1,
         size: "1024x1024",
         response_format: "b64_json",
         quality: "standard",
       });
+      console.log('OpenAI API call successful');
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : "Unknown error";
-      console.error("OpenAI API error:", errorMessage);
+      console.error("OpenAI API error details:", error);
+      
+      let errorMessage = "Failed to generate image. Please try again.";
+      let statusCode = 500;
+      
+      if (error instanceof Error) {
+        console.error("Error message:", error.message);
+        
+        // Handle specific OpenAI API errors
+        if (error.message.includes('insufficient_quota')) {
+          errorMessage = "OpenAI API quota exceeded. Please try again later.";
+          statusCode = 429;
+        } else if (error.message.includes('invalid_request')) {
+          errorMessage = "Invalid request to OpenAI API.";
+          statusCode = 400;
+        } else if (error.message.includes('rate_limit')) {
+          errorMessage = "OpenAI API rate limit exceeded. Please try again later.";
+          statusCode = 429;
+        }
+      }
+      
       return NextResponse.json(
-        { error: "Failed to generate image. Please try again." },
-        { status: 500 }
+        { error: errorMessage },
+        { status: statusCode }
       );
     }
 

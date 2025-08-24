@@ -16,7 +16,8 @@ const ProgressCard: React.FC<ProgressCardProps> = ({ isVisible, className }) => 
   const [currentStep, setCurrentStep] = useState(0);
 
   const steps = [
-    "📷 お顔写真を解析中...",
+    "📷 お顔写真をAIで分析中...",
+    "🧠 あなたの特徴を理解中...",
     "🎨 AIがキャラクターを描いているよ...",
     "🏠 すてきなおうちを建てているよ...",
     "✨ まほうで仕上げているよ...",
