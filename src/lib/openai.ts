@@ -72,54 +72,20 @@ export async function generateCharacter(imageBuffer: Buffer, mimeType: string = 
       imageMimeType = 'image/jpeg'; // GPT-4 Vision doesn't support HEIC, so we treat as JPEG
     }
     
-    console.log('Analyzing image with GPT-4 Vision...');
-    const visionResponse = await openai.chat.completions.create({
-      model: "gpt-4-vision-preview",
-      messages: [
-        {
-          role: "user",
-          content: [
-            {
-              type: "text",
-              text: `この写真の人物の特徴を分析し、ジブリ風のキャラクターデザインのための詳細な説明を提供してください。以下の要素に注目してください：
+    // 解析は行わず、写真をそのままアニメ風にスタイライズ
+    const imageBlob = new Blob([imageBuffer], { type: imageMimeType });
 
-1. 顔の特徴（目、鼻、口、輪郭）
-2. 髪型と髪の色
-3. 肌の色調
-4. 表情や雰囲気
-5. 年齢層や性別の印象
-6. 特徴的な要素（ほくろ、眼鏡など）
-
-ジブリ作品のキャラクターデザインに適した形で、これらの特徴をどのように表現できるか、具体的に説明してください。`
-            },
-            {
-              type: "image_url",
-              image_url: {
-                url: `data:${imageMimeType};base64,${base64Image}`,
-                detail: "high"
-              }
-            }
-          ]
-        }
-      ],
-      max_tokens: 1000
-    });
-
-    const characterDescription = visionResponse.choices[0]?.message?.content || "";
-    console.log('Character analysis completed:', characterDescription);
-
-    console.log('Generating character with gpt-image-1...');
-    const response = await openai.images.generate({
+    console.log('Generating character with gpt-image-1 (edit)...');
+    const response = await openai.images.edit({
       model: "gpt-image-1",
-      prompt: `ジブリ風のキャラクターを作成してください。以下の特徴を持つキャラクターです：
-
-${characterDescription}
+      image: [imageBlob],
+      prompt: `入力された写真の人物を参考に、やさしい手描きアニメ風の魅力的なキャラクターイラストに変換してください。
 
 スタイル要件：
-- ジブリ作品らしい顔の特徴とプロポーション
-- 写真の特徴を活かしながらジブリスタイルに適応
-- 自然な流れのある線と柔らかな陰影表現
-- 全身が見える構図で、顔と服装がはっきりと分かるデザイン`,
+- やわらかい線と水彩タッチの陰影
+- 温かみのある色合いで親しみやすい雰囲気
+- 顔立ちと雰囲気は写真を尊重しつつ、アニメ調に自然変換
+- 全身がわかる構図（服装はシンプルで清潔感のあるデザイン）`,
       size: "1024x1024",
       response_format: "b64_json"
     });
