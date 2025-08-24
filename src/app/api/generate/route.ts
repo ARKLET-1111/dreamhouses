@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { openai, generateCharacter, generateHouse, generateFinalIllustration } from "@/lib/openai";
+import { generateCharacter, generateHouse, generateFinalIllustration } from "@/lib/openai";
 
 // Simplified validation - removed complex validation imports
 
