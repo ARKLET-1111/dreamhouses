@@ -9,6 +9,23 @@ import Gallery from "@/components/Gallery";
 import { saveToGallery } from "@/lib/idb";
 import { Home, Sparkles } from "lucide-react";
 
+// APIレスポンスの型
+interface ApiGenerateResponse {
+  url: string;
+  characterUrl?: string;
+  houseUrl?: string;
+  error?: string;
+}
+
+function isApiGenerateResponse(value: unknown): value is ApiGenerateResponse {
+  if (typeof value !== 'object' || value === null) return false;
+  const v = value as Record<string, unknown>;
+  // 最低限、url か error のどちらかが文字列なら受け付ける
+  const hasUrl = typeof v.url === 'string';
+  const hasError = typeof v.error === 'string';
+  return hasUrl || hasError;
+}
+
 interface GenerationState {
   isGenerating: boolean;
   result: {
@@ -55,9 +72,9 @@ export default function HomePage() {
 
       // Safely parse response (handle 413 and non-JSON bodies)
       const contentType = response.headers.get('content-type') || '';
-      let result: any = null;
+      let result: ApiGenerateResponse | null = null;
       if (contentType.includes('application/json')) {
-        result = await response.json();
+        result = (await response.json()) as ApiGenerateResponse;
       } else {
         const text = await response.text();
         if (!response.ok) {
@@ -67,7 +84,11 @@ export default function HomePage() {
           throw new Error(`サーバーエラー: ${response.status} ${text.slice(0, 200)}`);
         }
         try {
-          result = JSON.parse(text);
+          const parsed = JSON.parse(text) as unknown;
+          if (!isApiGenerateResponse(parsed)) {
+            throw new Error('unexpected response shape');
+          }
+          result = parsed;
         } catch {
           throw new Error('サーバーから予期しない応答が返りました。しばらくしてからお試しください。');
         }
@@ -106,13 +127,6 @@ export default function HomePage() {
     }
   }, []);
 
-  const handleRegenerate = useCallback(() => {
-    if (!generationState.result) return;
-    
-    // For regeneration, we'll just reset to form since we don't store the original image
-    handleNewGeneration();
-  }, [generationState.result]);
-
   const handleNewGeneration = useCallback(() => {
     setGenerationState({
       isGenerating: false,
@@ -120,6 +134,13 @@ export default function HomePage() {
       error: null,
     });
   }, []);
+
+  const handleRegenerate = useCallback(() => {
+    if (!generationState.result) return;
+    
+    // For regeneration, we'll just reset to form since we don't store the original image
+    handleNewGeneration();
+  }, [generationState.result, handleNewGeneration]);
 
   const handleSaveToGallery = useCallback(async () => {
     if (!generationState.result) return;
