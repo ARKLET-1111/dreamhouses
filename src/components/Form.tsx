@@ -94,7 +94,7 @@ const Form: React.FC<FormProps> = ({ onSubmit, isLoading, disabled = false }) =>
           <CardDescription className="text-lg text-gray-700 font-medium mt-4">
             📷 あなたのおかおしゃしんで、
             <br />
-            🏰 すてきなおうちとかわいいキャラクターつくっちゃおう！
+            🏰 すてきなおうちとかわせたきゃらくたーをつくろう！
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-8 p-8">
@@ -102,7 +102,7 @@ const Form: React.FC<FormProps> = ({ onSubmit, isLoading, disabled = false }) =>
             {/* House Theme Input */}
             <div className="space-y-3 bg-gradient-to-r from-yellow-100 to-orange-100 p-6 rounded-2xl border-2 border-yellow-200">
               <label htmlFor="houseTheme" className="text-lg font-bold text-gray-800 flex items-center gap-2">
-                🏠 どんなおうちを建てたい？ ✨
+                🏠 どんなおうちをたてたい？ ✨
               </label>
               <Input
                 id="houseTheme"
@@ -119,10 +119,10 @@ const Form: React.FC<FormProps> = ({ onSubmit, isLoading, disabled = false }) =>
               )}
               <div className="flex items-center justify-between">
                 <p className="text-sm text-gray-600 font-medium">
-                  💭 自由に想像してみてね！
+                  💭 じゆうにそうぞうしてみてね！
                 </p>
                 <p className="text-sm text-gray-500 bg-white px-2 py-1 rounded-lg">
-                  {formData.houseTheme.length}/120文字
+                  {formData.houseTheme.length}/120もじ
                 </p>
               </div>
             </div>
@@ -130,7 +130,7 @@ const Form: React.FC<FormProps> = ({ onSubmit, isLoading, disabled = false }) =>
             {/* Face Photo Upload */}
             <div className="space-y-3 bg-gradient-to-r from-pink-100 to-purple-100 p-6 rounded-2xl border-2 border-pink-200">
               <label className="text-lg font-bold text-gray-800 flex items-center gap-2">
-                📷 あなたのお顔写真をアップロード！
+                📷 あなたのおかおしゃしんをあっぷろーど！
               </label>
               <FileDrop
                 onFileSelect={(file) => setFormData(prev => ({ ...prev, faceImage: file }))}
@@ -144,12 +144,12 @@ const Form: React.FC<FormProps> = ({ onSubmit, isLoading, disabled = false }) =>
               )}
               <div className="bg-yellow-100/70 p-3 rounded-xl border border-yellow-200">
                 <p className="text-sm text-gray-600 font-medium text-center">
-                  🤖 GPT-4があなたの写真を分析して、そっくりなアニメキャラクターを作るよ！
+                  🤖 えーあいがあなたのしゃしんをりようして、そっくりなあにめのきゃらくたーをつくるよ！
                 </p>
               </div>
               <div className="bg-blue-50 p-3 rounded-xl border border-blue-200">
                 <p className="text-xs text-blue-700 font-medium text-center">
-                  📱 iPhoneユーザーの方：設定 → カメラ → フォーマット を「互換性優先」にすると、より快適にご利用いただけます
+                  📱 あいふぉんのかた：せってい → かめら → ふぉーまっと を「ごかんせいゆうせん」にすると、よりかいてきにつかえます
                 </p>
               </div>
             </div>
@@ -158,10 +158,10 @@ const Form: React.FC<FormProps> = ({ onSubmit, isLoading, disabled = false }) =>
             <div className="space-y-3 bg-gradient-to-r from-cyan-100 to-teal-100 p-6 rounded-2xl border-2 border-cyan-200">
               <div className="text-center">
                 <p className="text-lg font-bold text-gray-800">
-                  🎨 AIがあなただけの可愛いキャラクターを作ります！
+                  🎨 えーあいが あなただけの かわいいきゃらくたーをつくります！
                 </p>
                 <p className="text-sm text-gray-600 font-medium mt-2">
-                  写真の特徴と選んだ雰囲気・ポーズで、オリジナルキャラクターが完成するよ！
+                  しゃしんのとくちょうと えらんだ ふんいき・ぽーずで、おりじなるきゃらくたーが かんせいするよ！
                 </p>
               </div>
             </div>
@@ -169,7 +169,7 @@ const Form: React.FC<FormProps> = ({ onSubmit, isLoading, disabled = false }) =>
             {/* Character Vibe Selection */}
             <div className="space-y-3 bg-gradient-to-r from-blue-100 to-cyan-100 p-6 rounded-2xl border-2 border-blue-200">
               <label className="text-lg font-bold text-gray-800 flex items-center gap-2">
-                😄 どんなキャラクターにする？
+                😄 どんなきゃらくたーにする？
               </label>
               <Select
                 value={formData.vibe}
@@ -182,7 +182,7 @@ const Form: React.FC<FormProps> = ({ onSubmit, isLoading, disabled = false }) =>
                 <SelectContent className="rounded-xl">
                   <SelectItem value="元気" className="text-lg cursor-pointer hover:bg-yellow-100">😊 げんきいっぱい</SelectItem>
                   <SelectItem value="上品" className="text-lg cursor-pointer hover:bg-pink-100">🌸 じょうひんでやさしい</SelectItem>
-                  <SelectItem value="クール" className="text-lg cursor-pointer hover:bg-blue-100">😎 かっこいい</SelectItem>
+                  <SelectItem value="クール" className="text-lg cursor-pointer hover:bg-blue-100">😎 くーる</SelectItem>
                 </SelectContent>
               </Select>
               {getFieldError("vibe") && (
@@ -193,7 +193,7 @@ const Form: React.FC<FormProps> = ({ onSubmit, isLoading, disabled = false }) =>
             {/* Pose Selection */}
             <div className="space-y-3 bg-gradient-to-r from-green-100 to-teal-100 p-6 rounded-2xl border-2 border-green-200">
               <label className="text-lg font-bold text-gray-800 flex items-center gap-2">
-                🙌 どんなポーズにする？
+                🙌 どんなぽーずにする？
               </label>
               <Select
                 value={formData.pose}
@@ -228,11 +228,11 @@ const Form: React.FC<FormProps> = ({ onSubmit, isLoading, disabled = false }) =>
                 <label htmlFor="agreed" className="text-gray-700 font-medium leading-6 cursor-pointer">
                   ✅ <span className="font-bold text-purple-700">おやくそく</span>
                   <br />
-                  📷 おかおしゃしんをつかってイラストを作ること、
+                  📷 おかおしゃしんをつかって いらすとをつくること、
                   <br />
-                  🏠 作った絵は自分だけで楽しむこと、
+                  🏠 つくったえは じぶんだけで たのしむこと、
                   <br />
-                  👨‍👩‍👧‍👦 みんなで仲良く使うことに同意します！
+                  👨‍👩‍👧‍👦 みんなで なかよく つかうことに どういします！
                 </label>
               </div>
               {getFieldError("agreed") && (
@@ -256,7 +256,7 @@ const Form: React.FC<FormProps> = ({ onSubmit, isLoading, disabled = false }) =>
               </Button>
               {!isFormValid && !isLoading && (
                 <p className="text-sm text-gray-500 mt-3">
-                  👆 うえのこうもくをすべてにゅうりょくしてね！
+                  👆 うえのこうもくを すべて にゅうりょくしてね！
                 </p>
               )}
             </div>

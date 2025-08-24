@@ -82,7 +82,7 @@ const FileDrop: React.FC<FileDropProps> = ({
       return convertedFile;
     } catch (error) {
       console.error('HEIC conversion failed with details:', error);
-      throw new Error(`HEIC変換に失敗しました: ${(error as Error).message}`);
+      throw new Error(`HEICへんかんにしっぱいしました: ${(error as Error).message}`);
     } finally {
       setIsConverting(false);
     }
@@ -147,12 +147,12 @@ const FileDrop: React.FC<FileDropProps> = ({
         
         // Show user-friendly guidance for HEIC files
         const userChoice = confirm(
-          'HEICファイルが選択されました。\n\n' +
-          '📱 iPhoneユーザーの方へ：\n' +
-          '1. iPhoneの設定 > カメラ > フォーマット を「互換性優先」に変更\n' +
-          '2. または写真アプリで「JPEGとして保存」を選択\n\n' +
-          '🖥️ このままHEICファイルを使用することもできます（推奨しません）\n\n' +
-          '「OK」でそのまま使用、「キャンセル」で他の画像を選択'
+          'HEICふぁいるがせんたくされました。\n\n' +
+          '📱 あいふぉんのかたへ：\n' +
+          '1. あいふぉんのせってい > かめら > ふぉーまっと を「ごかんせいゆうせん」にへんこう\n' +
+          '2. または しゃしんあぷりで「JPEGとしてほぞん」をせんたく\n\n' +
+          '🖥️ このままHEICふぁいるをしようすることもできます（すいしょうしません）\n\n' +
+          '「OK」でそのまましよう、「キャンセル」でほかのがぞうをせんたく'
         );
         
         if (userChoice) {
@@ -164,10 +164,10 @@ const FileDrop: React.FC<FileDropProps> = ({
           } catch (conversionError) {
             console.log('HEIC conversion failed, using original file:', conversionError);
             processedFile = file; // Use original HEIC file as fallback
-            alert('HEIC変換に失敗しましたが、元のファイルを使用します。\n画像生成で問題が発生する場合は、JPEG形式の画像をお試しください。');
+            alert('HEICへんかんにしっぱいしましたが、もとのふぁいるをしようします。\nがぞうせいせいで もんだいがはっせいするばあいは、JPEGけいしきのがぞうをおためしください。');
           }
         } else {
-          alert('別の画像ファイル（JPEG、PNG、WebP）を選択してください。');
+          alert('べつのがぞうふぁいる（JPEG、PNG、WebP）をせんたくしてください。');
           return; // Exit without processing
         }
       }
@@ -182,7 +182,7 @@ const FileDrop: React.FC<FileDropProps> = ({
       onFileSelect(processedFile);
     } catch (error) {
       console.error('File processing failed:', error);
-      alert('ファイルの処理に失敗しました: ' + (error as Error).message);
+      alert('ふぁいるのしょりに しっぱいしました: ' + (error as Error).message);
     }
   }, [onFileSelect]);
 
@@ -239,7 +239,7 @@ const FileDrop: React.FC<FileDropProps> = ({
         <div className="relative w-full h-48 bg-white rounded-2xl overflow-hidden border-4 border-pink-300 shadow-lg">
           <img
             src={preview}
-            alt="選択されたお顔写真"
+            alt="せんたくされた おかおしゃしん"
             className="w-full h-full object-cover"
           />
           <button
@@ -255,7 +255,7 @@ const FileDrop: React.FC<FileDropProps> = ({
             <X className="h-5 w-5" />
           </button>
           <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full">
-            <span className="text-sm font-bold text-gray-700">📷 きれいな写真だね！</span>
+            <span className="text-sm font-bold text-gray-700">📷 きれいなしゃしんだね！</span>
           </div>
         </div>
         <div className="bg-white/70 backdrop-blur-sm rounded-lg p-3 mt-3 text-center border-2 border-pink-200">
@@ -263,7 +263,7 @@ const FileDrop: React.FC<FileDropProps> = ({
             🎉 {selectedFile.name} ({Math.round(selectedFile.size / 1024)}KB)
           </p>
           <p className="text-xs text-gray-600 mt-1">
-            この写真でイラストを作るよ！
+            このしゃしんで いらすとをつくるよ！
           </p>
         </div>
       </div>
@@ -300,19 +300,19 @@ const FileDrop: React.FC<FileDropProps> = ({
             "text-lg font-bold",
             isConverting ? "text-purple-600" : isDragOver ? "text-pink-600" : "text-gray-700"
           )}>
-            {isConverting ? "🔄 HEIC形式を変換中..." : isDragOver ? "📷 写真をここに置いてね！" : "📸 お顔写真をアップロード"}
+            {isConverting ? "🔄 HEICけいしきを へんかんちゅう..." : isDragOver ? "📷 しゃしんを ここにおいてね！" : "📸 おかおしゃしんを あっぷろーど"}
           </p>
           <p className="text-sm text-gray-600 font-medium">
-            📁 ファイルを選ぶか、ここにドラッグしてね
+            📁 ふぁいるを えらぶか、ここに どらっぐしてね
           </p>
           <div className="bg-white/90 rounded-full px-4 py-2 mx-auto inline-block border-2 border-pink-200">
             <p className="text-xs text-gray-600">
-              📱 推奨: PNG, JPG, WebP (最大3MB)
+              📱 すいしょう: PNG, JPG, WebP (さいだい3MB)
             </p>
           </div>
           <div className="bg-yellow-100/80 rounded-lg px-3 py-2 mx-auto inline-block border border-yellow-300 mt-2">
             <p className="text-xs text-orange-700 font-medium">
-              ⚠️ iPhone HEIC形式は変換が必要です
+              ⚠️ あいふぉんの HEICけいしきは へんかんが ひつようです
             </p>
           </div>
         </div>

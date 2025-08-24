@@ -97,9 +97,9 @@ const ResultCard: React.FC<ResultCardProps> = ({
     <>
       <Card className={className}>
         <CardHeader className="text-center">
-          <CardTitle>✨ 完成しました！</CardTitle>
+          <CardTitle>✨かんせいしました！</CardTitle>
           <CardDescription>
-            テーマ「{houseTheme}」の世界で{vibe}な雰囲気の{pose}キャラクター
+            テーマ「{houseTheme}」のせかいで{vibe}なふんいきの{pose}キャラクター
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -148,7 +148,7 @@ const ResultCard: React.FC<ResultCardProps> = ({
               <p className="text-foreground">{houseTheme}</p>
             </div>
             <div className="bg-muted/50 p-3 rounded">
-              <p className="font-medium text-muted-foreground">雰囲気</p>
+              <p className="font-medium text-muted-foreground">ふんいき</p>
               <p className="text-foreground">{vibe}</p>
             </div>
             <div className="bg-muted/50 p-3 rounded">

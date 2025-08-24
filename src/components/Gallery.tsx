@@ -100,7 +100,7 @@ const Gallery: React.FC<GalleryProps> = ({ className, onRefresh }) => {
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-center py-8">
-            <div className="animate-pulse text-muted-foreground">読み込み中...</div>
+            <div className="animate-pulse text-muted-foreground">よみこみちゅう...</div>
           </div>
         </CardContent>
       </Card>
@@ -115,10 +115,10 @@ const Gallery: React.FC<GalleryProps> = ({ className, onRefresh }) => {
             <div>
               <CardTitle className="flex items-center gap-2">
                 <ImageIcon className="h-5 w-5" />
-                ギャラリー
+                ぎゃらりー
               </CardTitle>
               <CardDescription>
-                最近作成した作品（最大6件）
+                さいきんつくったさくひん（さいだい6けん）
               </CardDescription>
             </div>
             {items.length > 0 && (
@@ -129,7 +129,7 @@ const Gallery: React.FC<GalleryProps> = ({ className, onRefresh }) => {
                 className="flex items-center gap-2"
               >
                 <Trash2 className="h-4 w-4" />
-                すべて削除
+                すべてさくじょ
               </Button>
             )}
           </div>
@@ -138,9 +138,9 @@ const Gallery: React.FC<GalleryProps> = ({ className, onRefresh }) => {
           {items.length === 0 ? (
             <div className="text-center py-8">
               <ImageIcon className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <p className="text-muted-foreground">まだ作品がありません</p>
+              <p className="text-muted-foreground">まださくひんがありません</p>
               <p className="text-sm text-muted-foreground mt-1">
-                最初の作品を作成してみましょう！
+                さいしょのさくひんをつくってみましょう！
               </p>
             </div>
           ) : (
@@ -172,7 +172,7 @@ const Gallery: React.FC<GalleryProps> = ({ className, onRefresh }) => {
                         className="flex items-center gap-1"
                       >
                         <Download className="h-3 w-3" />
-                        保存
+                        ほぞん
                       </Button>
                     </div>
                   </div>
@@ -197,10 +197,10 @@ const Gallery: React.FC<GalleryProps> = ({ className, onRefresh }) => {
       <AlertDialog open={!!selectedItem} onOpenChange={() => setSelectedItem(null)}>
         <AlertDialogContent className="max-w-2xl">
           <AlertDialogHeader>
-            <AlertDialogTitle>作品詳細</AlertDialogTitle>
+            <AlertDialogTitle>さくひんのしょうさい</AlertDialogTitle>
             {selectedItem && (
               <AlertDialogDescription>
-                {formatDate(selectedItem.createdAt)} に作成
+                {formatDate(selectedItem.createdAt)} にさくせい
               </AlertDialogDescription>
             )}
           </AlertDialogHeader>
@@ -216,15 +216,15 @@ const Gallery: React.FC<GalleryProps> = ({ className, onRefresh }) => {
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                 <div className="bg-muted/50 p-3 rounded">
-                  <p className="font-medium text-muted-foreground">テーマ</p>
+                  <p className="font-medium text-muted-foreground">てーま</p>
                   <p className="text-foreground">{selectedItem.houseTheme}</p>
                 </div>
                 <div className="bg-muted/50 p-3 rounded">
-                  <p className="font-medium text-muted-foreground">雰囲気</p>
+                  <p className="font-medium text-muted-foreground">ふんいき</p>
                   <p className="text-foreground">{selectedItem.vibe}</p>
                 </div>
                 <div className="bg-muted/50 p-3 rounded">
-                  <p className="font-medium text-muted-foreground">ポーズ</p>
+                  <p className="font-medium text-muted-foreground">ぽーず</p>
                   <p className="text-foreground">{selectedItem.pose}</p>
                 </div>
               </div>
@@ -238,11 +238,11 @@ const Gallery: React.FC<GalleryProps> = ({ className, onRefresh }) => {
                 className="flex items-center gap-2"
               >
                 <Download className="h-4 w-4" />
-                ダウンロード
+                だうんろーど
               </Button>
             )}
             <AlertDialogAction onClick={() => setSelectedItem(null)}>
-              閉じる
+              とじる
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -252,19 +252,19 @@ const Gallery: React.FC<GalleryProps> = ({ className, onRefresh }) => {
       <AlertDialog open={showClearDialog} onOpenChange={setShowClearDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>すべての作品を削除</AlertDialogTitle>
+            <AlertDialogTitle>すべてのさくひんをさくじょ</AlertDialogTitle>
             <AlertDialogDescription>
-              ギャラリーに保存されているすべての作品を削除します。
-              この操作は取り消せません。続行しますか？
+              ぎゃらりーにほぞんされているすべてのさくひんをさくじょします。
+              このそうさはとりけせません。つづこうしますか？
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>キャンセル</AlertDialogCancel>
+            <AlertDialogCancel>きゃんせる</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleClearAll}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              削除する
+              さくじょする
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
