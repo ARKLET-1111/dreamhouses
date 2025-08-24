@@ -72,8 +72,8 @@ export async function generateCharacter(imageBuffer: Buffer, mimeType: string = 
       imageMimeType = 'image/jpeg'; // GPT-4 Vision doesn't support HEIC, so we treat as JPEG
     }
     
-    // 解析は行わず、写真をそのままアニメ風にスタイライズ
-    const imageBlob = new Blob([imageBuffer], { type: imageMimeType });
+    // 解析は行わず、写真をそのままアニメ風にスタイライズ（Buffer -> Uint8Array -> Blob）
+    const imageBlob = new Blob([new Uint8Array(imageBuffer)], { type: imageMimeType });
 
     console.log('Generating character with gpt-image-1 (edit)...');
     const response = await openai.images.edit({
