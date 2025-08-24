@@ -21,6 +21,7 @@ const FileDrop: React.FC<FileDropProps> = ({
 }) => {
   const [isDragOver, setIsDragOver] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
+  const [isConverting, setIsConverting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Update preview when selectedFile changes
@@ -48,6 +49,50 @@ const FileDrop: React.FC<FileDropProps> = ({
     setIsDragOver(false);
   }, []);
 
+  // Function to convert HEIC to JPEG
+  const convertHeicToJpeg = async (file: File): Promise<File> => {
+    try {
+      setIsConverting(true);
+      
+      // Dynamic import to avoid SSR issues
+      const heic2any = await import('heic2any');
+      
+      const convertedBlob = await heic2any.default({
+        blob: file,
+        toType: "image/jpeg",
+        quality: 0.8
+      }) as Blob;
+      
+      const convertedFile = new File([convertedBlob], 
+        file.name.replace(/\.heic$/i, '.jpg'), 
+        { type: "image/jpeg" }
+      );
+      
+      return convertedFile;
+    } catch (error) {
+      console.error('HEIC conversion failed:', error);
+      throw new Error('HEIC変換に失敗しました');
+    } finally {
+      setIsConverting(false);
+    }
+  };
+
+  const handleFileProcess = useCallback(async (file: File) => {
+    try {
+      let processedFile = file;
+      
+      // Check if it's a HEIC file and convert it
+      if (file.type === 'image/heic' || file.name.toLowerCase().endsWith('.heic')) {
+        processedFile = await convertHeicToJpeg(file);
+      }
+      
+      onFileSelect(processedFile);
+    } catch (error) {
+      console.error('File processing failed:', error);
+      // You could show an error message here
+    }
+  }, [onFileSelect]);
+
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -56,19 +101,22 @@ const FileDrop: React.FC<FileDropProps> = ({
     if (disabled) return;
 
     const files = Array.from(e.dataTransfer.files);
-    const imageFile = files.find(file => file.type.startsWith("image/"));
+    const imageFile = files.find(file => 
+      file.type.startsWith("image/") || 
+      file.name.toLowerCase().endsWith('.heic')
+    );
     
     if (imageFile) {
-      onFileSelect(imageFile);
+      handleFileProcess(imageFile);
     }
-  }, [disabled, onFileSelect]);
+  }, [disabled, handleFileProcess]);
 
   const handleFileInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file && file.type.startsWith("image/")) {
-      onFileSelect(file);
+    if (file && (file.type.startsWith("image/") || file.name.toLowerCase().endsWith('.heic'))) {
+      handleFileProcess(file);
     }
-  }, [onFileSelect]);
+  }, [handleFileProcess]);
 
   const handleClick = useCallback(() => {
     if (!disabled && fileInputRef.current) {
@@ -148,16 +196,16 @@ const FileDrop: React.FC<FileDropProps> = ({
         <div className="text-center space-y-2">
           <p className={cn(
             "text-lg font-bold",
-            isDragOver ? "text-pink-600" : "text-gray-700"
+            isConverting ? "text-purple-600" : isDragOver ? "text-pink-600" : "text-gray-700"
           )}>
-            {isDragOver ? "📷 写真をここに置いてね！" : "📸 お顔写真をアップロード"}
+            {isConverting ? "🔄 HEIC形式を変換中..." : isDragOver ? "📷 写真をここに置いてね！" : "📸 お顔写真をアップロード"}
           </p>
           <p className="text-sm text-gray-600 font-medium">
             📁 ファイルを選ぶか、ここにドラッグしてね
           </p>
           <div className="bg-white/90 rounded-full px-4 py-2 mx-auto inline-block border-2 border-pink-200">
             <p className="text-xs text-gray-600">
-              PNG, JPG, WebP (最大6MB)
+              PNG, JPG, WebP, HEIC (最大6MB)
             </p>
           </div>
         </div>
@@ -166,9 +214,9 @@ const FileDrop: React.FC<FileDropProps> = ({
       <input
         ref={fileInputRef}
         type="file"
-        accept="image/*"
+        accept="image/*,.heic,.HEIC"
         onChange={handleFileInput}
-        disabled={disabled}
+        disabled={disabled || isConverting}
         className="hidden"
       />
     </div>
