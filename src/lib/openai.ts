@@ -79,8 +79,7 @@ export async function generateCharacter(imageBuffer: Buffer, mimeType: string = 
 - 温かみのある色合いで親しみやすい雰囲気
 - 顔立ちと雰囲気は写真を尊重しつつ、アニメ調に自然変換
 - 全身がわかる構図（服装はシンプルで清潔感のあるデザイン）`,
-      size: "1024x1024",
-      response_format: "b64_json"
+      size: "1024x1024"
     });
 
     if (!response.data || !response.data[0]) {
@@ -172,8 +171,7 @@ export async function generateHouse(theme: string): Promise<string> {
 - 水彩画のような柔らかなテクスチャと自然な光の表現
 - 小さな物語を感じさせる環境の細部描写
 - 建物全体がはっきりと見える構図`,
-      size: "1024x1024",
-      response_format: "b64_json"
+      size: "1024x1024"
     });
 
     if (!response.data || !response.data[0]) {
@@ -207,8 +205,7 @@ export async function generateFinalIllustration(
 - キャラクターと家のデザインを自然に調和させる
 - ジブリ作品特有の美的センスを維持
 - 遠近感のある自然な光の表現`,
-      size: "1024x1024",
-      response_format: "b64_json"
+      size: "1024x1024"
     });
 
     if (!response.data || !response.data[0]) {
