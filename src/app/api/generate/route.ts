@@ -1,7 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { writeFile } from "fs/promises";
-import { join } from "path";
-import { v4 as uuidv4 } from "uuid";
 import { openai, buildPrompt } from "@/lib/openai";
 
 // Simplified validation - removed complex validation imports
@@ -114,25 +111,13 @@ export async function POST(request: NextRequest): Promise<NextResponse<GenerateR
       );
     }
 
-    // Save image to public/generated
+    // Return base64 image directly (Vercel doesn't allow file writing)
     const imageData = response.data[0].b64_json;
-    const imageBuffer64 = Buffer.from(imageData, "base64");
-    const filename = `${uuidv4()}.png`;
-    const filepath = join(process.cwd(), "public", "generated", filename);
-
-    try {
-      await writeFile(filepath, imageBuffer64);
-    } catch (error) {
-      console.error("Failed to save image:", error);
-      return NextResponse.json(
-        { error: "Failed to save generated image" },
-        { status: 500 }
-      );
-    }
-
-    const imageUrl = `/generated/${filename}`;
     
-    console.log(`Image generated successfully: ${imageUrl}`);
+    // For production, return base64 data URL instead of file path
+    const imageUrl = `data:image/png;base64,${imageData}`;
+    
+    console.log(`Image generated successfully`);
 
     return NextResponse.json(
       { url: imageUrl },

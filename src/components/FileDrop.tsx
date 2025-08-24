@@ -86,10 +86,10 @@ const FileDrop: React.FC<FileDropProps> = ({
   if (selectedFile && preview) {
     return (
       <div className={cn("relative", className)}>
-        <div className="relative w-full h-48 bg-muted rounded-lg overflow-hidden">
+        <div className="relative w-full h-48 bg-white rounded-2xl overflow-hidden border-4 border-pink-300 shadow-lg">
           <img
             src={preview}
-            alt="Selected face"
+            alt="選択されたお顔写真"
             className="w-full h-full object-cover"
           />
           <button
@@ -97,17 +97,25 @@ const FileDrop: React.FC<FileDropProps> = ({
             onClick={handleRemove}
             disabled={disabled}
             className={cn(
-              "absolute top-2 right-2 p-1 bg-destructive text-destructive-foreground rounded-full",
-              "hover:bg-destructive/90 transition-colors",
+              "absolute top-3 right-3 p-2 bg-red-500 text-white rounded-full shadow-lg",
+              "hover:bg-red-600 transition-all transform hover:scale-110",
               disabled && "opacity-50 cursor-not-allowed"
             )}
           >
-            <X className="h-4 w-4" />
+            <X className="h-5 w-5" />
           </button>
+          <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full">
+            <span className="text-sm font-bold text-gray-700">📷 きれいな写真だね！</span>
+          </div>
         </div>
-        <p className="text-sm text-muted-foreground mt-2 text-center">
-          {selectedFile.name} ({Math.round(selectedFile.size / 1024)}KB)
-        </p>
+        <div className="bg-white/70 backdrop-blur-sm rounded-lg p-3 mt-3 text-center border-2 border-pink-200">
+          <p className="text-sm font-bold text-gray-700">
+            🎉 {selectedFile.name} ({Math.round(selectedFile.size / 1024)}KB)
+          </p>
+          <p className="text-xs text-gray-600 mt-1">
+            この写真でイラストを作るよ！
+          </p>
+        </div>
       </div>
     );
   }
@@ -120,28 +128,38 @@ const FileDrop: React.FC<FileDropProps> = ({
         onDrop={handleDrop}
         onClick={handleClick}
         className={cn(
-          "w-full h-48 border-2 border-dashed rounded-lg",
+          "w-full h-48 border-4 border-dashed rounded-2xl bg-white/70 backdrop-blur-sm",
           "flex flex-col items-center justify-center gap-4",
-          "transition-colors cursor-pointer",
-          isDragOver && "border-primary bg-primary/5",
-          !isDragOver && "border-border hover:border-primary/50",
-          disabled && "opacity-50 cursor-not-allowed"
+          "transition-all cursor-pointer transform hover:scale-105",
+          isDragOver && "border-pink-400 bg-pink-100/70 shadow-xl scale-105",
+          !isDragOver && "border-pink-300 hover:border-pink-400 shadow-lg",
+          disabled && "opacity-50 cursor-not-allowed transform-none"
         )}
       >
-        <Upload className={cn(
-          "h-12 w-12",
-          isDragOver ? "text-primary" : "text-muted-foreground"
-        )} />
-        <div className="text-center">
+        <div className={cn(
+          "p-4 rounded-full transition-all",
+          isDragOver ? "bg-pink-200 animate-bounce" : "bg-pink-100"
+        )}>
+          <Upload className={cn(
+            "h-12 w-12 transition-colors",
+            isDragOver ? "text-pink-600" : "text-pink-500"
+          )} />
+        </div>
+        <div className="text-center space-y-2">
           <p className={cn(
-            "text-sm font-medium",
-            isDragOver ? "text-primary" : "text-foreground"
+            "text-lg font-bold",
+            isDragOver ? "text-pink-600" : "text-gray-700"
           )}>
-            {isDragOver ? "ファイルをドロップ" : "顔写真をアップロード"}
+            {isDragOver ? "📷 写真をここに置いてね！" : "📸 お顔写真をアップロード"}
           </p>
-          <p className="text-xs text-muted-foreground mt-1">
-            PNG, JPG, WebP (最大6MB)
+          <p className="text-sm text-gray-600 font-medium">
+            📁 ファイルを選ぶか、ここにドラッグしてね
           </p>
+          <div className="bg-white/90 rounded-full px-4 py-2 mx-auto inline-block border-2 border-pink-200">
+            <p className="text-xs text-gray-600">
+              PNG, JPG, WebP (最大6MB)
+            </p>
+          </div>
         </div>
       </div>
       

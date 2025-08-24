@@ -52,18 +52,29 @@ const Gallery: React.FC<GalleryProps> = ({ className, onRefresh }) => {
 
   const handleDownload = async (item: GalleryItem) => {
     try {
-      const response = await fetch(item.url);
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `dreamhouse-${item.houseTheme.replace(/[^a-zA-Z0-9]/g, "_")}-${item.createdAt}.png`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      
-      window.URL.revokeObjectURL(url);
+      if (item.url.startsWith('data:image')) {
+        // Base64 data URL
+        const link = document.createElement("a");
+        link.href = item.url;
+        link.download = `dreamhouse-${item.houseTheme.replace(/[^a-zA-Z0-9]/g, "_")}-${item.createdAt}.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } else {
+        // Regular file URL
+        const response = await fetch(item.url);
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `dreamhouse-${item.houseTheme.replace(/[^a-zA-Z0-9]/g, "_")}-${item.createdAt}.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        window.URL.revokeObjectURL(url);
+      }
     } catch (error) {
       console.error("Download failed:", error);
     }

@@ -123,38 +123,50 @@ export default function HomePage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-muted/50">
+    <div className="min-h-screen cute-gradient">
       <div className="container mx-auto px-4 py-8 space-y-8">
         {/* Hero Section */}
-        <div className="text-center space-y-4 py-12">
-          <div className="flex items-center justify-center gap-3 mb-6">
-            <Home className="h-10 w-10 text-primary" />
-            <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-              Dream House
+        <div className="text-center space-y-6 py-12">
+          <div className="flex items-center justify-center gap-4 mb-8">
+            <div className="animate-bounce-cute">
+              <Home className="h-16 w-16 text-primary drop-shadow-lg" />
+            </div>
+            <h1 className="text-5xl md:text-7xl font-bold text-white drop-shadow-lg animate-float">
+              🏠 ドリームハウス 🌟
             </h1>
-            <Sparkles className="h-10 w-10 text-primary animate-pulse" />
+            <div className="animate-bounce-cute" style={{ animationDelay: '0.5s' }}>
+              <Sparkles className="h-16 w-16 text-yellow-300 drop-shadow-lg" />
+            </div>
           </div>
           
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            あなたの顔写真を使って、理想の家とキャラクターが織りなす
-            <br />
-            <span className="text-primary font-semibold">夢のアニメ調イラスト</span>
-            を生成します
-          </p>
-          
-          <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-muted-foreground mt-6">
-            <span className="flex items-center gap-2">
-              <div className="h-2 w-2 bg-green-500 rounded-full" />
-              AI画像生成
-            </span>
-            <span className="flex items-center gap-2">
-              <div className="h-2 w-2 bg-blue-500 rounded-full" />
-              アニメ調スタイル
-            </span>
-            <span className="flex items-center gap-2">
-              <div className="h-2 w-2 bg-purple-500 rounded-full" />
-              1024×1024高解像度
-            </span>
+          <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-8 shadow-2xl mx-auto max-w-3xl border-4 border-white/50">
+            <p className="text-2xl text-gray-700 leading-relaxed font-medium">
+              📸 あなたの
+              <span className="text-pink-500 font-bold animate-wiggle inline-block">お顔写真</span>
+              を使って、
+              <br />
+              🏰 理想のおうちと
+              <span className="text-purple-500 font-bold">可愛いキャラクター</span>
+              の
+              <br />
+              ✨<span className="text-blue-500 font-bold text-3xl">まほうのイラスト</span>✨
+              を作っちゃおう！
+            </p>
+            
+            <div className="flex flex-wrap items-center justify-center gap-6 mt-8">
+              <div className="flex items-center gap-3 bg-pink-100 px-4 py-2 rounded-full shadow-lg">
+                <div className="h-4 w-4 bg-pink-400 rounded-full animate-pulse" />
+                <span className="text-pink-700 font-bold">🤖 AI画像生成</span>
+              </div>
+              <div className="flex items-center gap-3 bg-blue-100 px-4 py-2 rounded-full shadow-lg">
+                <div className="h-4 w-4 bg-blue-400 rounded-full animate-pulse" />
+                <span className="text-blue-700 font-bold">🎨 アニメ調</span>
+              </div>
+              <div className="flex items-center gap-3 bg-purple-100 px-4 py-2 rounded-full shadow-lg">
+                <div className="h-4 w-4 bg-purple-400 rounded-full animate-pulse" />
+                <span className="text-purple-700 font-bold">🖼️ 高画質</span>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -196,17 +208,20 @@ export default function HomePage() {
         </div>
 
         {/* Footer */}
-        <footer className="text-center py-8 border-t border-border">
-          <div className="space-y-2">
-            <p className="text-sm text-muted-foreground">
-              Dream House - AI-Powered Character & House Illustration Generator
-            </p>
-            <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-muted-foreground">
-              <span>Powered by OpenAI</span>
-              <span>•</span>
-              <span>Built with Next.js 14</span>
-              <span>•</span>
-              <span>For Personal Use Only</span>
+        <footer className="text-center py-8">
+          <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-6 shadow-xl mx-auto max-w-2xl border-4 border-white/50">
+            <div className="space-y-4">
+              <p className="text-lg font-bold text-gray-700">
+                🌈 ドリームハウス - みんなのまほうのイラスト工房 🎨
+              </p>
+              <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-gray-600">
+                <span className="bg-pink-100 px-3 py-1 rounded-full">🤖 OpenAI</span>
+                <span className="bg-blue-100 px-3 py-1 rounded-full">⚡ Next.js</span>
+                <span className="bg-purple-100 px-3 py-1 rounded-full">👨‍👩‍👧‍👦 おうちで楽しもう</span>
+              </div>
+              <p className="text-xs text-gray-500">
+                作った絵は大切に保管してね！みんなで楽しく使おう 💝
+              </p>
             </div>
           </div>
         </footer>

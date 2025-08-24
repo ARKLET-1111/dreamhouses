@@ -93,42 +93,51 @@ const Form: React.FC<FormProps> = ({ onSubmit, isLoading, disabled = false }) =>
 
   return (
     <>
-      <Card className="w-full max-w-2xl mx-auto">
-        <CardHeader>
-          <CardTitle>夢の家を建てよう</CardTitle>
-          <CardDescription>
-            あなたの顔写真を使って、理想の家とキャラクターのイラストを生成します
+      <Card className="w-full max-w-2xl mx-auto bg-white/95 backdrop-blur-sm shadow-2xl border-4 border-white/70 rounded-3xl overflow-hidden">
+        <CardHeader className="bg-gradient-to-r from-pink-200 via-purple-200 to-blue-200 text-center py-8">
+          <CardTitle className="text-3xl font-bold text-gray-800 flex items-center justify-center gap-3">
+            🏗️ まほうの家づくり 🏗️
+          </CardTitle>
+          <CardDescription className="text-lg text-gray-700 font-medium mt-4">
+            📷 あなたのお顔写真で、
+            <br />
+            🏰 すてきなおうちと可愛いキャラクターを作っちゃおう！
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-8 p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* House Theme Input */}
-            <div className="space-y-2">
-              <label htmlFor="houseTheme" className="text-sm font-medium">
-                どんな家を建てたいですか？ *
+            <div className="space-y-3 bg-gradient-to-r from-yellow-100 to-orange-100 p-6 rounded-2xl border-2 border-yellow-200">
+              <label htmlFor="houseTheme" className="text-lg font-bold text-gray-800 flex items-center gap-2">
+                🏠 どんなおうちを建てたい？ ✨
               </label>
               <Input
                 id="houseTheme"
                 type="text"
-                placeholder="例：お菓子の家、雲の上の家、ガラスの温室の家"
+                placeholder="🍭 お菓子の家、☁️ 雲の上の家、🌿 お花の家..."
                 value={formData.houseTheme}
                 onChange={(e) => setFormData(prev => ({ ...prev, houseTheme: e.target.value }))}
                 disabled={isLoading || disabled}
                 maxLength={120}
-                className={getFieldError("houseTheme") ? "border-destructive" : ""}
+                className={`text-lg rounded-xl border-3 ${getFieldError("houseTheme") ? "border-red-400 bg-red-50" : "border-yellow-300 bg-white"} shadow-lg`}
               />
               {getFieldError("houseTheme") && (
-                <p className="text-sm text-destructive">{getFieldError("houseTheme")}</p>
+                <p className="text-sm text-red-500 font-bold">😅 {getFieldError("houseTheme")}</p>
               )}
-              <p className="text-xs text-muted-foreground">
-                {formData.houseTheme.length}/120文字
-              </p>
+              <div className="flex items-center justify-between">
+                <p className="text-sm text-gray-600 font-medium">
+                  💭 自由に想像してみてね！
+                </p>
+                <p className="text-sm text-gray-500 bg-white px-2 py-1 rounded-lg">
+                  {formData.houseTheme.length}/120文字
+                </p>
+              </div>
             </div>
 
             {/* Face Image Upload */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium">
-                顔写真をアップロード *
+            <div className="space-y-3 bg-gradient-to-r from-pink-100 to-purple-100 p-6 rounded-2xl border-2 border-pink-200">
+              <label className="text-lg font-bold text-gray-800 flex items-center gap-2">
+                📷 あなたのお顔写真をアップロード！ 😊
               </label>
               <FileDrop
                 onFileSelect={handleFileSelect}
@@ -137,86 +146,107 @@ const Form: React.FC<FormProps> = ({ onSubmit, isLoading, disabled = false }) =>
                 disabled={isLoading || disabled}
               />
               {getFieldError("faceImage") && (
-                <p className="text-sm text-destructive">{getFieldError("faceImage")}</p>
+                <p className="text-sm text-red-500 font-bold">😅 {getFieldError("faceImage")}</p>
               )}
+              <p className="text-sm text-gray-600 font-medium">
+                📸 きれいなお顔写真を選んでね！
+              </p>
             </div>
 
             {/* Character Vibe Selection */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium">
-                キャラクターの雰囲気 *
+            <div className="space-y-3 bg-gradient-to-r from-blue-100 to-cyan-100 p-6 rounded-2xl border-2 border-blue-200">
+              <label className="text-lg font-bold text-gray-800 flex items-center gap-2">
+                😄 どんなキャラクターにする？
               </label>
               <Select
                 value={formData.vibe}
                 onValueChange={(value) => setFormData(prev => ({ ...prev, vibe: value }))}
                 disabled={isLoading || disabled}
               >
-                <SelectTrigger className={getFieldError("vibe") ? "border-destructive" : ""}>
-                  <SelectValue placeholder="雰囲気を選択してください" />
+                <SelectTrigger className={`text-lg rounded-xl ${getFieldError("vibe") ? "border-red-400 bg-red-50" : "border-blue-300 bg-white"} shadow-lg`}>
+                  <SelectValue placeholder="🌟 雰囲気を選んでね" />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="元気">元気</SelectItem>
-                  <SelectItem value="上品">上品</SelectItem>
-                  <SelectItem value="クール">クール</SelectItem>
+                <SelectContent className="rounded-xl">
+                  <SelectItem value="元気" className="text-lg cursor-pointer hover:bg-yellow-100">😊 元気いっぱい</SelectItem>
+                  <SelectItem value="上品" className="text-lg cursor-pointer hover:bg-pink-100">🌸 上品でやさしい</SelectItem>
+                  <SelectItem value="クール" className="text-lg cursor-pointer hover:bg-blue-100">😎 かっこいい</SelectItem>
                 </SelectContent>
               </Select>
               {getFieldError("vibe") && (
-                <p className="text-sm text-destructive">{getFieldError("vibe")}</p>
+                <p className="text-sm text-red-500 font-bold">😅 {getFieldError("vibe")}</p>
               )}
             </div>
 
             {/* Pose Selection */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium">
-                ポーズ *
+            <div className="space-y-3 bg-gradient-to-r from-green-100 to-teal-100 p-6 rounded-2xl border-2 border-green-200">
+              <label className="text-lg font-bold text-gray-800 flex items-center gap-2">
+                🙌 どんなポーズにする？
               </label>
               <Select
                 value={formData.pose}
                 onValueChange={(value) => setFormData(prev => ({ ...prev, pose: value }))}
                 disabled={isLoading || disabled}
               >
-                <SelectTrigger className={getFieldError("pose") ? "border-destructive" : ""}>
-                  <SelectValue placeholder="ポーズを選択してください" />
+                <SelectTrigger className={`text-lg rounded-xl ${getFieldError("pose") ? "border-red-400 bg-red-50" : "border-green-300 bg-white"} shadow-lg`}>
+                  <SelectValue placeholder="✋ ポーズを選んでね" />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="手を振る">手を振る</SelectItem>
-                  <SelectItem value="ピース">ピース</SelectItem>
-                  <SelectItem value="腰に手">腰に手</SelectItem>
+                <SelectContent className="rounded-xl">
+                  <SelectItem value="手を振る" className="text-lg cursor-pointer hover:bg-yellow-100">👋 手を振る</SelectItem>
+                  <SelectItem value="ピース" className="text-lg cursor-pointer hover:bg-pink-100">✌️ ピース</SelectItem>
+                  <SelectItem value="腰に手" className="text-lg cursor-pointer hover:bg-blue-100">🤜 腰に手をあてる</SelectItem>
                 </SelectContent>
               </Select>
               {getFieldError("pose") && (
-                <p className="text-sm text-destructive">{getFieldError("pose")}</p>
+                <p className="text-sm text-red-500 font-bold">😅 {getFieldError("pose")}</p>
               )}
             </div>
 
             {/* Agreement Checkbox */}
-            <div className="flex items-start space-x-2">
-              <input
-                type="checkbox"
-                id="agreed"
-                checked={formData.agreed}
-                onChange={(e) => setFormData(prev => ({ ...prev, agreed: e.target.checked }))}
-                disabled={isLoading || disabled}
-                className="mt-1"
-              />
-              <label htmlFor="agreed" className="text-sm text-muted-foreground leading-5">
-                顔写真を用いたイラスト生成であり、公序良俗に反しないことに同意します。
-                生成された画像は個人利用のみとし、商用利用や再配布は行いません。 *
-              </label>
+            <div className="bg-gradient-to-r from-purple-100 to-pink-100 p-6 rounded-2xl border-2 border-purple-200">
+              <div className="flex items-start space-x-4">
+                <input
+                  type="checkbox"
+                  id="agreed"
+                  checked={formData.agreed}
+                  onChange={(e) => setFormData(prev => ({ ...prev, agreed: e.target.checked }))}
+                  disabled={isLoading || disabled}
+                  className="mt-2 w-5 h-5 text-purple-600 rounded focus:ring-purple-500 focus:ring-2"
+                />
+                <label htmlFor="agreed" className="text-gray-700 font-medium leading-6 cursor-pointer">
+                  ✅ <span className="font-bold text-purple-700">おやくそく</span>
+                  <br />
+                  📷 お顔写真を使ってイラストを作ること、
+                  <br />
+                  🏠 作った絵は自分だけで楽しむこと、
+                  <br />
+                  👨‍👩‍👧‍👦 みんなで仲良く使うことに同意します！
+                </label>
+              </div>
+              {getFieldError("agreed") && (
+                <p className="text-sm text-red-500 font-bold mt-2">😅 {getFieldError("agreed")}</p>
+              )}
             </div>
-            {getFieldError("agreed") && (
-              <p className="text-sm text-destructive">{getFieldError("agreed")}</p>
-            )}
 
             {/* Submit Button */}
-            <Button
-              type="submit"
-              disabled={!isFormValid || isLoading || disabled}
-              className="w-full"
-              size="lg"
-            >
-              {isLoading ? "生成中..." : "生成する"}
-            </Button>
+            <div className="text-center pt-4">
+              <Button
+                type="submit"
+                disabled={!isFormValid || isLoading || disabled}
+                className={`text-2xl font-bold py-4 px-12 rounded-full shadow-xl transform transition-all duration-200 ${
+                  !isFormValid || isLoading || disabled 
+                    ? "bg-gray-300 text-gray-500 cursor-not-allowed" 
+                    : "bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 text-white hover:scale-110 active:scale-95 animate-pulse"
+                }`}
+                size="lg"
+              >
+                {isLoading ? "✨ まほうをかけているよ... ✨" : "🎨 まほうのイラストを作る！ 🌟"}
+              </Button>
+              {!isFormValid && !isLoading && (
+                <p className="text-sm text-gray-500 mt-3">
+                  👆 上の項目をすべて入力してね！
+                </p>
+              )}
+            </div>
           </form>
         </CardContent>
       </Card>

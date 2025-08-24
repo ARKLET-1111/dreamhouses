@@ -38,18 +38,29 @@ const ResultCard: React.FC<ResultCardProps> = ({
 
     setIsDownloading(true);
     try {
-      const response = await fetch(imageUrl);
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `dreamhouse-${houseTheme.replace(/[^a-zA-Z0-9]/g, "_")}-${Date.now()}.png`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      
-      window.URL.revokeObjectURL(url);
+      if (imageUrl.startsWith('data:image')) {
+        // Base64 data URL
+        const link = document.createElement("a");
+        link.href = imageUrl;
+        link.download = `dreamhouse-${houseTheme.replace(/[^a-zA-Z0-9]/g, "_")}-${Date.now()}.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } else {
+        // Regular file URL
+        const response = await fetch(imageUrl);
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `dreamhouse-${houseTheme.replace(/[^a-zA-Z0-9]/g, "_")}-${Date.now()}.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        window.URL.revokeObjectURL(url);
+      }
     } catch (error) {
       console.error("Download failed:", error);
     } finally {
