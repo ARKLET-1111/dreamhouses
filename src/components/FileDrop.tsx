@@ -108,26 +108,32 @@ const FileDrop: React.FC<FileDropProps> = ({
       console.log('Is HEIC file?', isHeicFile);
       
       if (isHeicFile) {
-        console.log('Converting HEIC file...');
-        try {
-          processedFile = await convertHeicToJpeg(file);
-          console.log('HEIC conversion completed:', {
-            originalName: file.name,
-            convertedName: processedFile.name,
-            convertedType: processedFile.type,
-            convertedSize: processedFile.size
-          });
-        } catch (conversionError) {
-          console.error('HEIC conversion failed, trying direct upload:', conversionError);
-          
-          // Try to use the original HEIC file directly (some browsers might support it)
-          console.log('Attempting to use original HEIC file directly...');
-          if (confirm('HEIC変換に失敗しました。元のファイルをそのまま使用しますか？\n\n※ 代替方法：\n1. iPhoneの設定 > カメラ > フォーマット を「互換性優先」に変更\n2. 写真アプリでJPEG形式で保存し直す\n\n「OK」で元ファイルを使用、「キャンセル」で中止')) {
-            processedFile = file; // Use original HEIC file
-            console.log('Using original HEIC file');
-          } else {
-            throw conversionError;
+        console.log('HEIC file detected, showing user guidance...');
+        
+        // Show user-friendly guidance for HEIC files
+        const userChoice = confirm(
+          'HEICファイルが選択されました。\n\n' +
+          '📱 iPhoneユーザーの方へ：\n' +
+          '1. iPhoneの設定 > カメラ > フォーマット を「互換性優先」に変更\n' +
+          '2. または写真アプリで「JPEGとして保存」を選択\n\n' +
+          '🖥️ このままHEICファイルを使用することもできます（推奨しません）\n\n' +
+          '「OK」でそのまま使用、「キャンセル」で他の画像を選択'
+        );
+        
+        if (userChoice) {
+          // Try to convert first, if fails use original
+          try {
+            console.log('Attempting HEIC conversion...');
+            processedFile = await convertHeicToJpeg(file);
+            console.log('HEIC conversion successful');
+          } catch (conversionError) {
+            console.log('HEIC conversion failed, using original file:', conversionError);
+            processedFile = file; // Use original HEIC file as fallback
+            alert('HEIC変換に失敗しましたが、元のファイルを使用します。\n画像生成で問題が発生する場合は、JPEG形式の画像をお試しください。');
           }
+        } else {
+          alert('別の画像ファイル（JPEG、PNG、WebP）を選択してください。');
+          return; // Exit without processing
         }
       }
       
@@ -259,7 +265,12 @@ const FileDrop: React.FC<FileDropProps> = ({
           </p>
           <div className="bg-white/90 rounded-full px-4 py-2 mx-auto inline-block border-2 border-pink-200">
             <p className="text-xs text-gray-600">
-              PNG, JPG, WebP, HEIC (最大6MB)
+              📱 推奨: PNG, JPG, WebP (最大6MB)
+            </p>
+          </div>
+          <div className="bg-yellow-100/80 rounded-lg px-3 py-2 mx-auto inline-block border border-yellow-300 mt-2">
+            <p className="text-xs text-orange-700 font-medium">
+              ⚠️ iPhone HEIC形式は変換が必要です
             </p>
           </div>
         </div>

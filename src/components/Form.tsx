@@ -147,6 +147,11 @@ const Form: React.FC<FormProps> = ({ onSubmit, isLoading, disabled = false }) =>
                   🤖 GPT-4があなたの写真を分析して、そっくりなアニメキャラクターを作るよ！
                 </p>
               </div>
+              <div className="bg-blue-50 p-3 rounded-xl border border-blue-200">
+                <p className="text-xs text-blue-700 font-medium text-center">
+                  📱 iPhoneユーザーの方：設定 → カメラ → フォーマット を「互換性優先」にすると、より快適にご利用いただけます
+                </p>
+              </div>
             </div>
 
             {/* Character Description */}
