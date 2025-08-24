@@ -1,4 +1,5 @@
 import OpenAI from "openai";
+import { toFile } from "openai/uploads";
 
 // Create OpenAI client with better error handling for Vercel
 export const openai = new OpenAI({
@@ -62,23 +63,15 @@ Quality:
 // Function to analyze face photo using GPT-4 Vision
 export async function generateCharacter(imageBuffer: Buffer, mimeType: string = "image/jpeg"): Promise<string> {
   try {
-    console.log('Converting image buffer to base64...');
-    const base64Image = imageBuffer.toString('base64');
-    console.log('Base64 conversion completed, length:', base64Image.length);
-    
     // Determine the correct MIME type
-    let imageMimeType = mimeType;
-    if (mimeType.includes('heic') || mimeType.includes('heif')) {
-      imageMimeType = 'image/jpeg'; // GPT-4 Vision doesn't support HEIC, so we treat as JPEG
-    }
-    
-    // 解析は行わず、写真をそのままアニメ風にスタイライズ（Buffer -> Uint8Array -> Blob）
-    const imageBlob = new Blob([new Uint8Array(imageBuffer)], { type: imageMimeType });
+    const imageMimeType = (mimeType.includes('heic') || mimeType.includes('heif')) ? 'image/jpeg' : mimeType;
+    // Buffer -> Uploadable (SDK推奨)
+    const uploadable = await toFile(new Uint8Array(imageBuffer), 'photo.jpg', { type: imageMimeType });
 
     console.log('Generating character with gpt-image-1 (edit)...');
     const response = await openai.images.edit({
       model: "gpt-image-1",
-      image: [imageBlob],
+      image: uploadable,
       prompt: `入力された写真の人物を参考に、やさしい手描きアニメ風の魅力的なキャラクターイラストに変換してください。
 
 スタイル要件：
