@@ -117,17 +117,19 @@ ${characterDescription}
 - 写真の特徴を活かしながらジブリスタイルに適応
 - 自然な流れのある線と柔らかな陰影表現
 - 全身が見える構図で、顔と服装がはっきりと分かるデザイン`,
-      n: 1,
       size: "1024x1024",
-      quality: "hd",
-      style: "natural"
+      response_format: "b64_json"
     });
 
-    if (!response.data) {
+    if (!response.data || !response.data[0]) {
       throw new Error("No data returned from OpenAI API");
     }
 
-    return response.data[0].url || "";
+    const b64 = (response.data[0] as any).b64_json as string | undefined;
+    const url = (response.data[0] as any).url as string | undefined;
+    if (b64) return `data:image/png;base64,${b64}`;
+    if (url) return url;
+    throw new Error("No image payload in response");
   } catch (error: unknown) {
     const errorObj = error as Record<string, unknown>;
     console.error("Character generation failed with detailed error:", {
@@ -207,17 +209,18 @@ export async function generateHouse(theme: string): Promise<string> {
 - 水彩画のような柔らかなテクスチャと自然な光の表現
 - 小さな物語を感じさせる環境の細部描写
 - 建物全体がはっきりと見える構図`,
-      n: 1,
       size: "1024x1024",
-      quality: "hd",
-      style: "natural"
+      response_format: "b64_json"
     });
 
-    if (!response.data) {
+    if (!response.data || !response.data[0]) {
       throw new Error("No data returned from OpenAI API");
     }
-
-    return response.data[0].url || "";
+    const b64 = (response.data[0] as any).b64_json as string | undefined;
+    const url = (response.data[0] as any).url as string | undefined;
+    if (b64) return `data:image/png;base64,${b64}`;
+    if (url) return url;
+    throw new Error("No image payload in response");
   } catch (error: unknown) {
     console.error("House generation failed:", error);
     throw new Error(`House generation failed: ${error}`);
@@ -240,17 +243,18 @@ export async function generateFinalIllustration(
 - キャラクターと家のデザインを自然に調和させる
 - ジブリ作品特有の美的センスを維持
 - 遠近感のある自然な光の表現`,
-      n: 1,
       size: "1024x1024",
-      quality: "hd",
-      style: "natural"
+      response_format: "b64_json"
     });
 
-    if (!response.data) {
+    if (!response.data || !response.data[0]) {
       throw new Error("No data returned from OpenAI API");
     }
-
-    return response.data[0].url || "";
+    const b64 = (response.data[0] as any).b64_json as string | undefined;
+    const url = (response.data[0] as any).url as string | undefined;
+    if (b64) return `data:image/png;base64,${b64}`;
+    if (url) return url;
+    throw new Error("No image payload in response");
   } catch (error: unknown) {
     console.error("Final illustration generation failed:", error);
     throw new Error(`Final illustration generation failed: ${error}`);
