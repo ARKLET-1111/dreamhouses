@@ -37,10 +37,14 @@ export async function POST(request: NextRequest): Promise<NextResponse<GenerateR
       );
     }
 
-    const houseTheme = formData.get("houseTheme") as string;
-    const vibe = formData.get("vibe") as string;
-    const pose = formData.get("pose") as string;
-    const faceImage = formData.get("faceImage") as File;
+    const houseTheme = (formData.get("houseTheme") as string) || "";
+    const vibe = (formData.get("vibe") as string) || "";
+    const pose = (formData.get("pose") as string) || "";
+    const faceImage = formData.get("faceImage") as File | null;
+    const regenerateCharacter = (formData.get("regenerateCharacter") as string) === "true";
+    const regenerateHouse = (formData.get("regenerateHouse") as string) === "true";
+    const providedCharacterUrl = (formData.get("characterUrl") as string) || "";
+    const providedHouseUrl = (formData.get("houseUrl") as string) || "";
 
     // Basic validation
     console.log('Received data:', { 
@@ -52,7 +56,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<GenerateR
       hasOpenAIKey: !!process.env.OPENAI_API_KEY
     });
 
-    if (!houseTheme || houseTheme.trim().length === 0) {
+    if (regenerateHouse && (!houseTheme || houseTheme.trim().length === 0)) {
       console.log('House theme validation failed');
       return NextResponse.json(
         { error: "House theme is required" },
@@ -76,16 +80,28 @@ export async function POST(request: NextRequest): Promise<NextResponse<GenerateR
       );
     }
 
-    if (!faceImage || faceImage.size === 0) {
+    if (regenerateCharacter && (!faceImage || faceImage.size === 0)) {
       console.log('Face image validation failed');
       return NextResponse.json(
         { error: "Face image is required" },
         { status: 400 }
       );
     }
+    if (!regenerateCharacter && !providedCharacterUrl) {
+      return NextResponse.json(
+        { error: "characterUrl is required when not regenerating character" },
+        { status: 400 }
+      );
+    }
+    if (!regenerateHouse && !providedHouseUrl) {
+      return NextResponse.json(
+        { error: "houseUrl is required when not regenerating house" },
+        { status: 400 }
+      );
+    }
 
     // Check file size (4MB limit to avoid 413 on platforms)
-    if (faceImage.size > 4 * 1024 * 1024) {
+    if (regenerateCharacter && faceImage && faceImage.size > 4 * 1024 * 1024) {
       console.log('File size too large:', faceImage.size);
       return NextResponse.json(
         { error: "アップロード画像が大きすぎます。最大 4MB までにしてください。" },
@@ -94,7 +110,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<GenerateR
     }
 
     // Check file type
-    if (!faceImage.type.startsWith('image/')) {
+    if (regenerateCharacter && faceImage && !faceImage.type.startsWith('image/')) {
       console.log('Invalid file type:', faceImage.type);
       return NextResponse.json(
         { error: "Invalid file type. Please upload an image file." },
@@ -103,49 +119,51 @@ export async function POST(request: NextRequest): Promise<NextResponse<GenerateR
     }
 
     // Step 1: Generate character from face photo
-    let imageBuffer;
-    let characterUrl;
-    
-    try {
-      imageBuffer = Buffer.from(await faceImage.arrayBuffer());
-      console.log('Image buffer created, size:', imageBuffer.length);
-      
-      console.log('Generating character...');
-      characterUrl = await generateCharacter(imageBuffer, faceImage.type);
-      console.log('Character generation completed');
-    } catch (error: unknown) {
-      const err = error as Record<string, unknown>;
-      console.error('Character generation failed:', {
-        message: err.message,
-        code: err.code,
-        type: err.type,
-        status: err.status,
-        stack: err.stack,
-      });
-      const status = (typeof err.status === 'number' && err.status) || 500;
-      return NextResponse.json(
-        {
-          error: "Failed to generate character",
-          message: (err.message as string) || String(error),
+    let imageBuffer: Buffer | null = null;
+    let characterUrl: string = providedCharacterUrl;
+    if (regenerateCharacter) {
+      try {
+        imageBuffer = Buffer.from(await (faceImage as File).arrayBuffer());
+        console.log('Image buffer created, size:', imageBuffer.length);
+        console.log('Generating character...');
+        characterUrl = await generateCharacter(imageBuffer, (faceImage as File).type);
+        console.log('Character generation completed');
+      } catch (error: unknown) {
+        const err = error as Record<string, unknown>;
+        console.error('Character generation failed:', {
+          message: err.message,
           code: err.code,
           type: err.type,
-        },
-        { status }
-      );
+          status: err.status,
+          stack: err.stack,
+        });
+        const status = (typeof err.status === 'number' && err.status) || 500;
+        return NextResponse.json(
+          {
+            error: "Failed to generate character",
+            message: (err.message as string) || String(error),
+            code: err.code,
+            type: err.type,
+          },
+          { status }
+        );
+      }
     }
 
     // Step 2: Generate dream house
-    let houseUrl;
-    try {
-      console.log('Generating house...');
-      houseUrl = await generateHouse(houseTheme);
-      console.log('House generation completed');
-    } catch (error) {
-      console.error('House generation failed:', error);
-      return NextResponse.json(
-        { error: "Failed to generate house" },
-        { status: 500 }
-      );
+    let houseUrl: string = providedHouseUrl;
+    if (regenerateHouse) {
+      try {
+        console.log('Generating house...');
+        houseUrl = await generateHouse(houseTheme);
+        console.log('House generation completed');
+      } catch (error) {
+        console.error('House generation failed:', error);
+        return NextResponse.json(
+          { error: "Failed to generate house" },
+          { status: 500 }
+        );
+      }
     }
 
     // Step 3: Generate final illustration
