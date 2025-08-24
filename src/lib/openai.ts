@@ -105,9 +105,9 @@ export async function generateCharacter(imageBuffer: Buffer, mimeType: string = 
     const characterDescription = visionResponse.choices[0]?.message?.content || "";
     console.log('Character analysis completed:', characterDescription);
 
-    console.log('Generating character with DALL-E 3...');
+    console.log('Generating character with gpt-image-1...');
     const response = await openai.images.generate({
-      model: "dall-e-3",
+      model: "gpt-image-1",
       prompt: `ジブリ風のキャラクターを作成してください。以下の特徴を持つキャラクターです：
 
 ${characterDescription}
@@ -198,7 +198,7 @@ export async function generateHouse(theme: string): Promise<string> {
   try {
     console.log('Generating dream house...');
     const response = await openai.images.generate({
-      model: "dall-e-3",
+      model: "gpt-image-1",
       prompt: `スタジオジブリ風の魔法のような${theme}を作成してください。温かみがあり、招き入れたくなるような雰囲気を持つ家にしてください。
 
 スタイル要件：
@@ -233,7 +233,7 @@ export async function generateFinalIllustration(
   try {
     console.log('Generating final illustration...');
     const response = await openai.images.generate({
-      model: "dall-e-3",
+      model: "gpt-image-1",
       prompt: `キャラクターとドリームハウスを組み合わせた、スタジオジブリ風のイラストを作成してください。キャラクターは${vibe}な性格で、${pose}のポーズをとっています。
 
 スタイル要件：

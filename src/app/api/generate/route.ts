@@ -188,25 +188,6 @@ export async function POST(request: NextRequest): Promise<NextResponse<GenerateR
       );
     }
 
-    if (!response.data || response.data.length === 0 || !response.data[0].b64_json) {
-      return NextResponse.json(
-        { error: "No image data received from AI service" },
-        { status: 500 }
-      );
-    }
-
-    // Return base64 image directly (Vercel doesn't allow file writing)
-    const imageData = response.data[0].b64_json;
-    
-    // For production, return base64 data URL instead of file path
-    const imageUrl = `data:image/png;base64,${imageData}`;
-    
-    console.log(`Image generated successfully`);
-
-    return NextResponse.json(
-      { url: imageUrl },
-      { status: 200 }
-    );
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : "Unknown error";
     console.error("API error:", errorMessage);
