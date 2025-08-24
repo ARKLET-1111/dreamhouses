@@ -172,7 +172,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<GenerateR
           errorMessage = "OpenAI API rate limit exceeded. Please try again later.";
           statusCode = 429;
         } else if (error.message.includes('invalid_api_key') || errorCode === 'invalid_api_key') {
-          errorMessage = "Invalid OpenAI API key. Please check your configuration.";
+          errorMessage = "OpenAI APIキーに問題があります。\n\n考えられる原因：\n• APIキーの期限切れ\n• 使用量制限の到達\n• 請求設定の問題\n\nOpenAI公式サイトでAPIキーと使用量をご確認ください。";
           statusCode = 401;
         } else if (error.message.includes('content_policy_violation')) {
           errorMessage = "Content policy violation. Please try different input.";

@@ -17,6 +17,9 @@ const config: Config = {
       },
     },
     extend: {
+      fontFamily: {
+        darumadrop: ["var(--font-darumadrop)"],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

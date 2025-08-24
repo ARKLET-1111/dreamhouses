@@ -16,12 +16,12 @@ const ProgressCard: React.FC<ProgressCardProps> = ({ isVisible, className }) => 
   const [currentStep, setCurrentStep] = useState(0);
 
   const steps = [
-    "📷 お顔写真をAIで分析中...",
-    "🧠 あなたの特徴を理解中...",
-    "🎨 AIがキャラクターを描いているよ...",
-    "🏠 すてきなおうちを建てているよ...",
-    "✨ まほうで仕上げているよ...",
-    "🎉 完成！"
+    "📷 おかおしゃしんをえーあいでぶんせきちゅう...",
+    "🧠 あなたのとくちょうをりかいちゅう...",
+    "🎨 えーあいがきゃらくたーをかいているよ...",
+    "🏠 すてきなおうちをたてているよ...",
+    "✨ まほうでしあげているよ...",
+    "🎉 できたよ！"
   ];
 
   useEffect(() => {
@@ -67,16 +67,16 @@ const ProgressCard: React.FC<ProgressCardProps> = ({ isVisible, className }) => 
             <Loader2 className="h-8 w-8 text-purple-600" />
           </div>
           <CardTitle className="text-2xl font-bold text-gray-800">
-            ✨ まほうをかけているよ ✨
+            ✨ おまじないちゅう ✨
           </CardTitle>
           <div className="animate-bounce">
             🎨
           </div>
         </div>
         <CardDescription className="text-lg text-gray-700 font-medium">
-          🤖 AIが あなただけの すてきなイラストを
+          🤖 えーあいが あなただけの すてきないらすとを
           <br />
-          いっしょうけんめい 作っているよ！
+          いっしょうけんめい つくっているよ！
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6 p-8">
@@ -99,7 +99,7 @@ const ProgressCard: React.FC<ProgressCardProps> = ({ isVisible, className }) => 
         <div className="bg-gradient-to-r from-green-100 to-cyan-100 p-6 rounded-2xl border-2 border-green-200">
           <div className="flex items-center gap-3 mb-4">
             <div className="h-4 w-4 bg-green-500 rounded-full animate-pulse" />
-            <p className="text-lg font-bold text-gray-700">🔄 進み具合</p>
+            <p className="text-lg font-bold text-gray-700">🔄 すすみぐあい</p>
           </div>
           <ul className="space-y-3">
             {steps.map((step, index) => (
@@ -130,9 +130,9 @@ const ProgressCard: React.FC<ProgressCardProps> = ({ isVisible, className }) => 
 
         <div className="text-center bg-yellow-100/70 p-4 rounded-2xl border-2 border-yellow-200">
           <p className="text-sm text-gray-600 font-medium">
-            ⏰ すてきなイラストを作るのに少し時間がかかるよ
+            ⏰ すてきないらすとをつくるのにすこしじかんがかかるよ
             <br />
-            📱 待っている間も楽しんでね！
+            📱 まっているあいだもたのしんでね！
           </p>
         </div>
       </CardContent>

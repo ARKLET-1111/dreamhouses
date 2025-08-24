@@ -132,7 +132,7 @@ export default function HomePage() {
               <Home className="h-16 w-16 text-primary drop-shadow-lg" />
             </div>
             <h1 className="text-5xl md:text-7xl font-bold text-white drop-shadow-lg animate-float">
-              🏠 ドリームハウス 🌟
+              🏠 どりーむはうす 🌟
             </h1>
             <div className="animate-bounce-cute" style={{ animationDelay: '0.5s' }}>
               <Sparkles className="h-16 w-16 text-yellow-300 drop-shadow-lg" />
@@ -142,29 +142,29 @@ export default function HomePage() {
           <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-8 shadow-2xl mx-auto max-w-3xl border-4 border-white/50">
             <p className="text-2xl text-gray-700 leading-relaxed font-medium">
               📸 あなたの
-              <span className="text-pink-500 font-bold animate-wiggle inline-block">お顔写真</span>
-              を使って、
+              <span className="text-pink-500 font-bold animate-wiggle inline-block">おかおしゃしん</span>
+              をつかって、
               <br />
-              🏰 理想のおうちと
-              <span className="text-purple-500 font-bold">可愛いキャラクター</span>
+              🏰 りそうのおうちと
+              <span className="text-purple-500 font-bold">かわいいきゃらくたー</span>
               の
               <br />
-              ✨<span className="text-blue-500 font-bold text-3xl">まほうのイラスト</span>✨
-              を作っちゃおう！
+              ✨<span className="text-blue-500 font-bold text-3xl">まほうのいらすと</span>✨
+              をつくっちゃおう！
             </p>
             
             <div className="flex flex-wrap items-center justify-center gap-6 mt-8">
               <div className="flex items-center gap-3 bg-pink-100 px-4 py-2 rounded-full shadow-lg">
                 <div className="h-4 w-4 bg-pink-400 rounded-full animate-pulse" />
-                <span className="text-pink-700 font-bold">🤖 AI画像生成</span>
+                <span className="text-pink-700 font-bold">🤖 えーあいがぞうせいせい</span>
               </div>
               <div className="flex items-center gap-3 bg-blue-100 px-4 py-2 rounded-full shadow-lg">
                 <div className="h-4 w-4 bg-blue-400 rounded-full animate-pulse" />
-                <span className="text-blue-700 font-bold">🎨 アニメ調</span>
+                <span className="text-blue-700 font-bold">🎨 あにめちょう</span>
               </div>
               <div className="flex items-center gap-3 bg-purple-100 px-4 py-2 rounded-full shadow-lg">
                 <div className="h-4 w-4 bg-purple-400 rounded-full animate-pulse" />
-                <span className="text-purple-700 font-bold">🖼️ 高画質</span>
+                <span className="text-purple-700 font-bold">🖼️ こうがしつ</span>
               </div>
             </div>
           </div>
@@ -212,15 +212,15 @@ export default function HomePage() {
           <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-6 shadow-xl mx-auto max-w-2xl border-4 border-white/50">
             <div className="space-y-4">
               <p className="text-lg font-bold text-gray-700">
-                🌈 ドリームハウス - みんなのまほうのイラスト工房 🎨
+                🌈 どりーむはうす - みんなのまほうのいらすとこうぼう 🎨
               </p>
               <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-gray-600">
                 <span className="bg-pink-100 px-3 py-1 rounded-full">🤖 OpenAI</span>
                 <span className="bg-blue-100 px-3 py-1 rounded-full">⚡ Next.js</span>
-                <span className="bg-purple-100 px-3 py-1 rounded-full">👨‍👩‍👧‍👦 おうちで楽しもう</span>
+                <span className="bg-purple-100 px-3 py-1 rounded-full">👨‍👩‍👧‍👦 おうちでたのしもう</span>
               </div>
               <p className="text-xs text-gray-500">
-                作った絵は大切に保管してね！みんなで楽しく使おう 💝
+                つくったえはたいせつにほかんしてね！みんなでたのしくつかおう 💝
               </p>
             </div>
           </div>
@@ -231,27 +231,27 @@ export default function HomePage() {
       <AlertDialog open={showErrorDialog} onOpenChange={setShowErrorDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>生成エラー</AlertDialogTitle>
+            <AlertDialogTitle>せいせいえらー</AlertDialogTitle>
             <AlertDialogDescription asChild>
               <div>
                 <div>
-                  {generationState.error || "画像の生成中にエラーが発生しました。"}
+                  {generationState.error || "がぞうのせいせいちゅうにえらーがはっせいしました。"}
                 </div>
                 <div className="mt-4">
-                  以下の点を確認してから、もう一度お試しください：
+                  つぎのところをかくにんしてから、もういちどおためしください：
                 </div>
                 <ul className="list-disc list-inside mt-2 space-y-1 text-sm">
-                  <li>インターネット接続が安定していること</li>
-                  <li>アップロードした画像が6MB以下であること</li>
-                  <li>画像が顔写真であること</li>
-                  <li>しばらく時間をおいてから再試行すること</li>
+                  <li>いんたーねっとせつぞくがあんていしていること</li>
+                  <li>あっぷろーどしたがぞうが6MBいかであること</li>
+                  <li>がぞうがおかおしゃしんであること</li>
+                  <li>しばらくじかんをおいてからさいしこうすること</li>
                 </ul>
               </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogAction onClick={handleErrorDialogClose}>
-              閉じる
+              とじる
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

@@ -45,23 +45,23 @@ const Form: React.FC<FormProps> = ({ onSubmit, isLoading, disabled = false }) =>
     const newErrors: ValidationError[] = [];
     
     if (!formData.houseTheme.trim()) {
-      newErrors.push({ field: "houseTheme", message: "家のテーマを入力してください" });
+      newErrors.push({ field: "houseTheme", message: "おうちのテーマをにゅうりょくしてください" });
     }
     
     if (!formData.vibe) {
-      newErrors.push({ field: "vibe", message: "キャラクターの雰囲気を選択してください" });
+      newErrors.push({ field: "vibe", message: "きゃらくたーのふんいきをえらんでください" });
     }
     
     if (!formData.pose) {
-      newErrors.push({ field: "pose", message: "ポーズを選択してください" });
+      newErrors.push({ field: "pose", message: "ぽーずをえらんでください" });
     }
     
     if (!formData.faceImage) {
-      newErrors.push({ field: "faceImage", message: "お顔写真をアップロードしてください" });
+      newErrors.push({ field: "faceImage", message: "おかおしゃしんをあっぷろーどしてください" });
     }
     
     if (!formData.agreed) {
-      newErrors.push({ field: "agreed", message: "規約に同意してください" });
+      newErrors.push({ field: "agreed", message: "おやくそくにどういしてください" });
     }
 
     if (newErrors.length > 0) {
@@ -89,12 +89,12 @@ const Form: React.FC<FormProps> = ({ onSubmit, isLoading, disabled = false }) =>
       <Card className="w-full max-w-2xl mx-auto bg-white/95 backdrop-blur-sm shadow-2xl border-4 border-white/70 rounded-3xl overflow-hidden">
         <CardHeader className="bg-gradient-to-r from-pink-200 via-purple-200 to-blue-200 text-center py-8">
           <CardTitle className="text-3xl font-bold text-gray-800 flex items-center justify-center gap-3">
-            🏗️ まほうの家づくり 🏗️
+            🏗️ まほうのいえづくり 🏗️
           </CardTitle>
           <CardDescription className="text-lg text-gray-700 font-medium mt-4">
-            📷 あなたのお顔写真で、
+            📷 あなたのおかおしゃしんで、
             <br />
-            🏰 すてきなおうちと可愛いキャラクターを作っちゃおう！
+            🏰 すてきなおうちとかわいいキャラクターつくっちゃおう！
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-8 p-8">
@@ -107,7 +107,7 @@ const Form: React.FC<FormProps> = ({ onSubmit, isLoading, disabled = false }) =>
               <Input
                 id="houseTheme"
                 type="text"
-                placeholder="🍭 お菓子の家、☁️ 雲の上の家、🌿 お花の家..."
+                placeholder="🍭 おかしのいえ、☁️ くものうえのいえ、🌿 おはなのいえ..."
                 value={formData.houseTheme}
                 onChange={(e) => setFormData(prev => ({ ...prev, houseTheme: e.target.value }))}
                 disabled={isLoading || disabled}
@@ -177,11 +177,11 @@ const Form: React.FC<FormProps> = ({ onSubmit, isLoading, disabled = false }) =>
                 disabled={isLoading || disabled}
               >
                 <SelectTrigger className={`text-lg rounded-xl ${getFieldError("vibe") ? "border-red-400 bg-red-50" : "border-blue-300 bg-white"} shadow-lg`}>
-                  <SelectValue placeholder="🌟 雰囲気を選んでね" />
+                  <SelectValue placeholder="🌟 ふんいきをえらんでね" />
                 </SelectTrigger>
                 <SelectContent className="rounded-xl">
-                  <SelectItem value="元気" className="text-lg cursor-pointer hover:bg-yellow-100">😊 元気いっぱい</SelectItem>
-                  <SelectItem value="上品" className="text-lg cursor-pointer hover:bg-pink-100">🌸 上品でやさしい</SelectItem>
+                  <SelectItem value="元気" className="text-lg cursor-pointer hover:bg-yellow-100">😊 げんきいっぱい</SelectItem>
+                  <SelectItem value="上品" className="text-lg cursor-pointer hover:bg-pink-100">🌸 じょうひんでやさしい</SelectItem>
                   <SelectItem value="クール" className="text-lg cursor-pointer hover:bg-blue-100">😎 かっこいい</SelectItem>
                 </SelectContent>
               </Select>
@@ -201,12 +201,12 @@ const Form: React.FC<FormProps> = ({ onSubmit, isLoading, disabled = false }) =>
                 disabled={isLoading || disabled}
               >
                 <SelectTrigger className={`text-lg rounded-xl ${getFieldError("pose") ? "border-red-400 bg-red-50" : "border-green-300 bg-white"} shadow-lg`}>
-                  <SelectValue placeholder="✋ ポーズを選んでね" />
+                  <SelectValue placeholder="✋ ぽーずをえらんでね" />
                 </SelectTrigger>
                 <SelectContent className="rounded-xl">
-                  <SelectItem value="手を振る" className="text-lg cursor-pointer hover:bg-yellow-100">👋 手を振る</SelectItem>
-                  <SelectItem value="ピース" className="text-lg cursor-pointer hover:bg-pink-100">✌️ ピース</SelectItem>
-                  <SelectItem value="腰に手" className="text-lg cursor-pointer hover:bg-blue-100">🤜 腰に手をあてる</SelectItem>
+                  <SelectItem value="手を振る" className="text-lg cursor-pointer hover:bg-yellow-100">👋 てをふる</SelectItem>
+                  <SelectItem value="ピース" className="text-lg cursor-pointer hover:bg-pink-100">✌️ ぴーす</SelectItem>
+                  <SelectItem value="腰に手" className="text-lg cursor-pointer hover:bg-blue-100">🤜 こしにてをあてる</SelectItem>
                 </SelectContent>
               </Select>
               {getFieldError("pose") && (
@@ -228,7 +228,7 @@ const Form: React.FC<FormProps> = ({ onSubmit, isLoading, disabled = false }) =>
                 <label htmlFor="agreed" className="text-gray-700 font-medium leading-6 cursor-pointer">
                   ✅ <span className="font-bold text-purple-700">おやくそく</span>
                   <br />
-                  📷 お顔写真を使ってイラストを作ること、
+                  📷 おかおしゃしんをつかってイラストを作ること、
                   <br />
                   🏠 作った絵は自分だけで楽しむこと、
                   <br />
@@ -252,11 +252,11 @@ const Form: React.FC<FormProps> = ({ onSubmit, isLoading, disabled = false }) =>
                 }`}
                 size="lg"
               >
-                {isLoading ? "✨ まほうをかけているよ... ✨" : "🎨 まほうのイラストを作る！ 🌟"}
+                {isLoading ? "✨ まほうをかけているよ... ✨" : "🎨 まほうのいらすとをつくる！ 🌟"}
               </Button>
               {!isFormValid && !isLoading && (
                 <p className="text-sm text-gray-500 mt-3">
-                  👆 上の項目をすべて入力してね！
+                  👆 うえのこうもくをすべてにゅうりょくしてね！
                 </p>
               )}
             </div>
@@ -268,9 +268,9 @@ const Form: React.FC<FormProps> = ({ onSubmit, isLoading, disabled = false }) =>
       <AlertDialog open={showErrorDialog} onOpenChange={setShowErrorDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>入力エラー</AlertDialogTitle>
+            <AlertDialogTitle>にゅうりょくえらー</AlertDialogTitle>
             <AlertDialogDescription>
-              以下の項目を確認してください：
+              つぎのところをかくにんしてください：
               <ul className="mt-2 space-y-1">
                 {errors.map((error, index) => (
                   <li key={index} className="text-sm">
@@ -282,7 +282,7 @@ const Form: React.FC<FormProps> = ({ onSubmit, isLoading, disabled = false }) =>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogAction onClick={() => setShowErrorDialog(false)}>
-              確認
+              わかりました
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
