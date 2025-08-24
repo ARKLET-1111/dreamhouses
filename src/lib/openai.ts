@@ -42,8 +42,11 @@ Quality: High detail, clean lines, professional anime art quality`;
 // Function to analyze face photo using GPT-4 Vision
 export async function analyzeFacePhoto(imageBuffer: Buffer): Promise<string> {
   try {
+    console.log('Converting image buffer to base64...');
     const base64Image = imageBuffer.toString('base64');
+    console.log('Base64 conversion completed, length:', base64Image.length);
     
+    console.log('Calling GPT-4o for face analysis...');
     const response = await openai.chat.completions.create({
       model: "gpt-4o",
       messages: [
@@ -58,7 +61,7 @@ export async function analyzeFacePhoto(imageBuffer: Buffer): Promise<string> {
               type: "image_url",
               image_url: {
                 url: `data:image/jpeg;base64,${base64Image}`,
-                detail: "high"
+                detail: "low"
               }
             }
           ]
@@ -67,10 +70,23 @@ export async function analyzeFacePhoto(imageBuffer: Buffer): Promise<string> {
       max_tokens: 300
     });
 
-    return response.choices[0]?.message?.content || "可愛らしい特徴を持った人";
-  } catch (error) {
-    console.error("Face analysis failed:", error);
-    return "可愛らしい特徴を持った人";
+    console.log('GPT-4o response received');
+    const result = response.choices[0]?.message?.content || "可愛らしい特徴を持った人";
+    console.log('Face analysis result:', result.substring(0, 100) + '...');
+    
+    return result;
+  } catch (error: unknown) {
+    const errorObj = error as Record<string, unknown>;
+    console.error("Face analysis failed with detailed error:", {
+      message: errorObj.message,
+      code: errorObj.code,
+      type: errorObj.type,
+      status: errorObj.status,
+      stack: errorObj.stack
+    });
+    
+    // Re-throw the error with more details
+    throw new Error(`Face analysis failed: ${errorObj.message || String(error)}`);
   }
 }
 

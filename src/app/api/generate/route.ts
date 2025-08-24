@@ -101,12 +101,29 @@ export async function POST(request: NextRequest): Promise<NextResponse<GenerateR
     }
 
     // Convert image to buffer for analysis
-    const imageBuffer = Buffer.from(await faceImage.arrayBuffer());
+    let imageBuffer;
+    let faceDescription;
     
-    console.log('Analyzing face photo with GPT-4 Vision...');
-    // Analyze face photo with GPT-4 Vision
-    const faceDescription = await analyzeFacePhoto(imageBuffer);
-    console.log('Face analysis completed:', faceDescription.substring(0, 100) + '...');
+    try {
+      imageBuffer = Buffer.from(await faceImage.arrayBuffer());
+      console.log('Image buffer created, size:', imageBuffer.length);
+    } catch (error) {
+      console.error('Failed to create image buffer:', error);
+      return NextResponse.json(
+        { error: "Failed to process uploaded image" },
+        { status: 400 }
+      );
+    }
+    
+    try {
+      console.log('Analyzing face photo with GPT-4 Vision...');
+      faceDescription = await analyzeFacePhoto(imageBuffer);
+      console.log('Face analysis completed:', faceDescription.substring(0, 100) + '...');
+    } catch (error) {
+      console.error('Face analysis failed, using fallback description:', error);
+      // Use fallback description instead of failing completely
+      faceDescription = "可愛らしい特徴を持つ人で、優しい表情をしている。アニメスタイルに適した親しみやすい雰囲気がある。";
+    }
 
     // Build the prompt with face description
     const prompt = buildPromptWithFace(houseTheme, vibe, pose, faceDescription);
@@ -127,7 +144,15 @@ export async function POST(request: NextRequest): Promise<NextResponse<GenerateR
       });
       console.log('OpenAI API call successful');
     } catch (error: unknown) {
-      console.error("OpenAI API error details:", error);
+      const errorObj = error as Record<string, unknown>;
+      console.error("OpenAI API error details:", {
+        message: errorObj.message,
+        code: errorObj.code,
+        type: errorObj.type,
+        status: errorObj.status,
+        param: errorObj.param,
+        stack: errorObj.stack
+      });
       
       let errorMessage = "Failed to generate image. Please try again.";
       let statusCode = 500;
@@ -136,15 +161,24 @@ export async function POST(request: NextRequest): Promise<NextResponse<GenerateR
         console.error("Error message:", error.message);
         
         // Handle specific OpenAI API errors
-        if (error.message.includes('insufficient_quota')) {
-          errorMessage = "OpenAI API quota exceeded. Please try again later.";
+        const errorCode = (error as unknown as Record<string, unknown>).code;
+        if (error.message.includes('insufficient_quota') || errorCode === 'insufficient_quota') {
+          errorMessage = "OpenAI API quota exceeded. Please check your API usage.";
           statusCode = 429;
-        } else if (error.message.includes('invalid_request')) {
-          errorMessage = "Invalid request to OpenAI API.";
+        } else if (error.message.includes('invalid_request') || errorCode === 'invalid_request_error') {
+          errorMessage = "Invalid request to OpenAI API: " + error.message;
           statusCode = 400;
-        } else if (error.message.includes('rate_limit')) {
+        } else if (error.message.includes('rate_limit') || errorCode === 'rate_limit_exceeded') {
           errorMessage = "OpenAI API rate limit exceeded. Please try again later.";
           statusCode = 429;
+        } else if (error.message.includes('invalid_api_key') || errorCode === 'invalid_api_key') {
+          errorMessage = "Invalid OpenAI API key. Please check your configuration.";
+          statusCode = 401;
+        } else if (error.message.includes('content_policy_violation')) {
+          errorMessage = "Content policy violation. Please try different input.";
+          statusCode = 400;
+        } else {
+          errorMessage = `OpenAI API Error: ${error.message}`;
         }
       }
       
