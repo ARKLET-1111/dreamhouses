@@ -79,17 +79,38 @@ const FileDrop: React.FC<FileDropProps> = ({
 
   const handleFileProcess = useCallback(async (file: File) => {
     try {
+      console.log('Processing file:', {
+        name: file.name,
+        type: file.type,
+        size: file.size,
+        lastModified: file.lastModified
+      });
+
       let processedFile = file;
       
-      // Check if it's a HEIC file and convert it
-      if (file.type === 'image/heic' || file.name.toLowerCase().endsWith('.heic')) {
+      // More comprehensive HEIC detection
+      const isHeicFile = file.type === 'image/heic' || 
+                         file.type === 'image/heif' ||
+                         file.name.toLowerCase().endsWith('.heic') ||
+                         file.name.toLowerCase().endsWith('.heif');
+      
+      console.log('Is HEIC file?', isHeicFile);
+      
+      if (isHeicFile) {
+        console.log('Converting HEIC file...');
         processedFile = await convertHeicToJpeg(file);
+        console.log('HEIC conversion completed:', {
+          originalName: file.name,
+          convertedName: processedFile.name,
+          convertedType: processedFile.type,
+          convertedSize: processedFile.size
+        });
       }
       
       onFileSelect(processedFile);
     } catch (error) {
       console.error('File processing failed:', error);
-      // You could show an error message here
+      alert('ファイルの処理に失敗しました: ' + (error as Error).message);
     }
   }, [onFileSelect]);
 
@@ -101,9 +122,12 @@ const FileDrop: React.FC<FileDropProps> = ({
     if (disabled) return;
 
     const files = Array.from(e.dataTransfer.files);
+    console.log('Dropped files:', files.map(f => ({ name: f.name, type: f.type, size: f.size })));
+    
     const imageFile = files.find(file => 
       file.type.startsWith("image/") || 
-      file.name.toLowerCase().endsWith('.heic')
+      file.name.toLowerCase().endsWith('.heic') ||
+      file.name.toLowerCase().endsWith('.heif')
     );
     
     if (imageFile) {
@@ -113,8 +137,14 @@ const FileDrop: React.FC<FileDropProps> = ({
 
   const handleFileInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file && (file.type.startsWith("image/") || file.name.toLowerCase().endsWith('.heic'))) {
+    console.log('File input selected:', file ? { name: file.name, type: file.type, size: file.size } : 'No file');
+    
+    if (file && (file.type.startsWith("image/") || 
+                 file.name.toLowerCase().endsWith('.heic') ||
+                 file.name.toLowerCase().endsWith('.heif'))) {
       handleFileProcess(file);
+    } else if (file) {
+      alert('サポートされていないファイル形式です。PNG, JPG, WebP, またはHEICファイルを選択してください。');
     }
   }, [handleFileProcess]);
 
@@ -214,7 +244,7 @@ const FileDrop: React.FC<FileDropProps> = ({
       <input
         ref={fileInputRef}
         type="file"
-        accept="image/*,.heic,.HEIC"
+        accept="image/*,.heic,.HEIC,.heif,.HEIF"
         onChange={handleFileInput}
         disabled={disabled || isConverting}
         className="hidden"
