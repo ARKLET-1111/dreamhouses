@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { openai, buildPromptWithFace, analyzeFacePhoto } from "@/lib/openai";
+import { openai, generateCharacter, generateHouse, generateFinalIllustration } from "@/lib/openai";
 
 // Simplified validation - removed complex validation imports
 
@@ -100,49 +100,49 @@ export async function POST(request: NextRequest): Promise<NextResponse<GenerateR
       );
     }
 
-    // Convert image to buffer for analysis
+    // Step 1: Generate character from face photo
     let imageBuffer;
-    let faceDescription;
+    let characterUrl;
     
     try {
       imageBuffer = Buffer.from(await faceImage.arrayBuffer());
       console.log('Image buffer created, size:', imageBuffer.length);
+      
+      console.log('Generating character...');
+      characterUrl = await generateCharacter(imageBuffer, faceImage.type);
+      console.log('Character generation completed');
     } catch (error) {
-      console.error('Failed to create image buffer:', error);
+      console.error('Character generation failed:', error);
       return NextResponse.json(
-        { error: "Failed to process uploaded image" },
-        { status: 400 }
+        { error: "Failed to generate character" },
+        { status: 500 }
       );
     }
-    
+
+    // Step 2: Generate dream house
+    let houseUrl;
     try {
-      console.log('Analyzing face photo with GPT-4 Vision...');
-      faceDescription = await analyzeFacePhoto(imageBuffer);
-      console.log('Face analysis completed:', faceDescription.substring(0, 100) + '...');
+      console.log('Generating house...');
+      houseUrl = await generateHouse(houseTheme);
+      console.log('House generation completed');
     } catch (error) {
-      console.error('Face analysis failed, using fallback description:', error);
-      // Use fallback description instead of failing completely
-      faceDescription = "可愛らしい特徴を持つ人で、優しい表情をしている。アニメスタイルに適した親しみやすい雰囲気がある。";
+      console.error('House generation failed:', error);
+      return NextResponse.json(
+        { error: "Failed to generate house" },
+        { status: 500 }
+      );
     }
 
-    // Build the prompt with face description
-    const prompt = buildPromptWithFace(houseTheme, vibe, pose, faceDescription);
-
-    console.log(`Generating image for theme: "${houseTheme}" with vibe: "${vibe}" and pose: "${pose}"`);
-
-    // Generate image with OpenAI
-    console.log('Calling OpenAI API...');
-    let response;
+    // Step 3: Generate final illustration
     try {
-      response = await openai.images.generate({
-        model: "dall-e-3",
-        prompt: prompt,
-        n: 1,
-        size: "1792x1024",
-        response_format: "b64_json",
-        quality: "standard",
-      });
-      console.log('OpenAI API call successful');
+      console.log('Generating final illustration...');
+      const finalUrl = await generateFinalIllustration(characterUrl, houseUrl, vibe, pose);
+      console.log('Final illustration generation completed');
+
+      return NextResponse.json(
+        { url: finalUrl },
+        { status: 200 }
+      );
     } catch (error: unknown) {
       const errorObj = error as Record<string, unknown>;
       console.error("OpenAI API error details:", {

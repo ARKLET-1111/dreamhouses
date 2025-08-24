@@ -57,7 +57,7 @@ Quality:
 - Magical and whimsical atmosphere typical of Studio Ghibli films`;
 
 // Function to analyze face photo using GPT-4 Vision
-export async function analyzeFacePhoto(imageBuffer: Buffer, mimeType: string = "image/jpeg"): Promise<string> {
+export async function generateCharacter(imageBuffer: Buffer, mimeType: string = "image/jpeg"): Promise<string> {
   try {
     console.log('Converting image buffer to base64...');
     const base64Image = imageBuffer.toString('base64');
@@ -69,38 +69,70 @@ export async function analyzeFacePhoto(imageBuffer: Buffer, mimeType: string = "
       imageMimeType = 'image/jpeg'; // GPT-4 Vision doesn't support HEIC, so we treat as JPEG
     }
     
-    console.log('Calling GPT-4o for face analysis with MIME type:', imageMimeType);
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o",
+    console.log('Analyzing image with GPT-4 Vision...');
+    const visionResponse = await openai.chat.completions.create({
+      model: "gpt-4-vision-preview",
       messages: [
         {
           role: "user",
           content: [
             {
               type: "text",
-              text: "この写真の人の特徴を分析して、アニメキャラクター作成のための詳細な説明を日本語で提供してください。髪型、髪色、目の色、肌の色調、顔の形、表情などの特徴を含めて、優しい子供向けのアニメスタイルに適した表現で説明してください。"
+              text: `この写真の人物の特徴を分析し、ジブリ風のキャラクターデザインのための詳細な説明を提供してください。以下の要素に注目してください：
+
+1. 顔の特徴（目、鼻、口、輪郭）
+2. 髪型と髪の色
+3. 肌の色調
+4. 表情や雰囲気
+5. 年齢層や性別の印象
+6. 特徴的な要素（ほくろ、眼鏡など）
+
+ジブリ作品のキャラクターデザインに適した形で、これらの特徴をどのように表現できるか、具体的に説明してください。`
             },
             {
               type: "image_url",
               image_url: {
                 url: `data:${imageMimeType};base64,${base64Image}`,
-                detail: "low"
+                detail: "high"
               }
             }
           ]
         }
       ],
-      max_tokens: 300
+      max_tokens: 1000
     });
 
-    console.log('GPT-4o response received');
-    const result = response.choices[0]?.message?.content || "可愛らしい特徴を持った人";
-    console.log('Face analysis result:', result.substring(0, 100) + '...');
-    
-    return result;
+    const characterDescription = visionResponse.choices[0]?.message?.content || "";
+    console.log('Character analysis completed:', characterDescription);
+
+    console.log('Generating character with DALL-E 3...');
+    const response = await openai.images.generate({
+      model: "dall-e-3",
+      prompt: `ジブリ風のキャラクターを作成してください。以下の特徴を持つキャラクターです：
+
+${characterDescription}
+
+スタイル要件：
+- ジブリ作品らしい顔の特徴とプロポーション
+- 写真の特徴を活かしながらジブリスタイルに適応
+- 自然な流れのある線と柔らかな陰影表現
+- 温かみのある優しい色使い
+- 子供から大人まで楽しめる親しみやすいデザイン
+- 全身が見える構図で、顔と服装がはっきりと分かるデザイン`,
+      n: 1,
+      size: "1024x1024",
+      quality: "hd",
+      style: "natural"
+    });
+
+    if (!response.data) {
+      throw new Error("No data returned from OpenAI API");
+    }
+
+    return response.data[0].url || "";
   } catch (error: unknown) {
     const errorObj = error as Record<string, unknown>;
-    console.error("Face analysis failed with detailed error:", {
+    console.error("Character generation failed with detailed error:", {
       message: errorObj.message,
       code: errorObj.code,
       type: errorObj.type,
@@ -109,7 +141,7 @@ export async function analyzeFacePhoto(imageBuffer: Buffer, mimeType: string = "
     });
     
     // Re-throw the error with more details
-    throw new Error(`Face analysis failed: ${errorObj.message || String(error)}`);
+    throw new Error(`Character generation failed: ${errorObj.message || String(error)}`);
   }
 }
 
@@ -164,17 +196,68 @@ Art quality:
 - Environmental storytelling through small details
 - Magical and whimsical atmosphere typical of Studio Ghibli films`;
 
-export function buildPrompt(houseTheme: string, vibe: string, pose: string): string {
-  return GENERATION_PROMPT_TEMPLATE
-    .replace(/\{\{houseTheme\}\}/g, houseTheme)
-    .replace(/\{\{vibe\}\}/g, vibe)
-    .replace(/\{\{pose\}\}/g, pose);
+export async function generateHouse(theme: string): Promise<string> {
+  try {
+    console.log('Generating dream house...');
+    const response = await openai.images.generate({
+      model: "dall-e-3",
+      prompt: `スタジオジブリ風の魔法のような${theme}を作成してください。温かみがあり、招き入れたくなるような雰囲気を持つ家にしてください。
+
+スタイル要件：
+- ジブリ作品らしい建築様式で細部まで丁寧に描写
+- 魔法のような要素を自然に取り入れる
+- 水彩画のような柔らかなテクスチャと自然な光の表現
+- 小さな物語を感じさせる環境の細部描写
+- 建物全体がはっきりと見える構図`,
+      n: 1,
+      size: "1024x1024",
+      quality: "hd",
+      style: "natural"
+    });
+
+    if (!response.data) {
+      throw new Error("No data returned from OpenAI API");
+    }
+
+    return response.data[0].url || "";
+  } catch (error: unknown) {
+    console.error("House generation failed:", error);
+    throw new Error(`House generation failed: ${error}`);
+  }
 }
 
-export function buildPromptWithFace(houseTheme: string, vibe: string, pose: string, faceDescription: string): string {
-  return GENERATION_PROMPT_WITH_FACE_TEMPLATE
-    .replace(/\{\{houseTheme\}\}/g, houseTheme)
-    .replace(/\{\{vibe\}\}/g, vibe)
-    .replace(/\{\{pose\}\}/g, pose)
-    .replace(/\{\{faceDescription\}\}/g, faceDescription);
+export async function generateFinalIllustration(
+  characterUrl: string,
+  houseUrl: string,
+  vibe: string,
+  pose: string
+): Promise<string> {
+  try {
+    console.log('Generating final illustration...');
+    const response = await openai.images.generate({
+      model: "dall-e-3",
+      prompt: `キャラクターとドリームハウスを組み合わせた、スタジオジブリ風のイラストを作成してください。キャラクターは${vibe}な性格で、${pose}のポーズをとっています。
+
+スタイル要件：
+- キャラクターと家のデザインを自然に調和させる
+- ジブリ作品特有の美的センスを維持
+- 風に揺れる草や舞い散る葉など、環境の細部を追加
+- 遠近感のある自然な光の表現
+- 小さな魔法のような要素による幻想的な雰囲気
+- キャラクターが家と関わりを持つような全体的な構図`,
+      n: 1,
+      size: "1024x1024",
+      quality: "hd",
+      style: "natural"
+    });
+
+    if (!response.data) {
+      throw new Error("No data returned from OpenAI API");
+    }
+
+    return response.data[0].url || "";
+  } catch (error: unknown) {
+    console.error("Final illustration generation failed:", error);
+    throw new Error(`Final illustration generation failed: ${error}`);
+  }
 }

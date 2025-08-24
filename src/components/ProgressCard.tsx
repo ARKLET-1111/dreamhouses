@@ -16,10 +16,9 @@ const ProgressCard: React.FC<ProgressCardProps> = ({ isVisible, className }) => 
   const [currentStep, setCurrentStep] = useState(0);
 
   const steps = [
-    "📷 おかおしゃしんをえーあいでぶんせきちゅう...",
-    "🧠 あなたのとくちょうをりかいちゅう...",
-    "🎨 えーあいがきゃらくたーをかいているよ...",
-    "🏠 すてきなおうちをたてているよ...",
+    "📷 おかおしゃしんからきゃらくたーをつくっているよ...",
+    "🏠 すてきなおうちをつくっているよ...",
+    "🎨 きゃらくたーとおうちをくみあわせているよ...",
     "✨ まほうでしあげているよ...",
     "🎉 できたよ！"
   ];
