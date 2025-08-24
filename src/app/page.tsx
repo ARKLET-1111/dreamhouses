@@ -64,6 +64,9 @@ export default function HomePage() {
       apiFormData.append("vibe", formData.vibe);
       apiFormData.append("pose", formData.pose);
       apiFormData.append("faceImage", formData.faceImage);
+      // 初回生成では両方さいせいせい（A方式）
+      apiFormData.append("regenerateCharacter", "true");
+      apiFormData.append("regenerateHouse", "true");
 
       const response = await fetch("/api/generate", {
         method: "POST",
