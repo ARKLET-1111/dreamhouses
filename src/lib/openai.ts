@@ -10,35 +10,51 @@ export function isOpenAIConfigured(): boolean {
   return !!process.env.OPENAI_API_KEY;
 }
 
-export const GENERATION_PROMPT_TEMPLATE = `Create a charming anime-style illustration featuring a cute character in front of a {{houseTheme}}. The character should have a {{vibe}} personality and be doing {{pose}}.
+export const GENERATION_PROMPT_TEMPLATE = `Create a charming Studio Ghibli style illustration featuring a whimsical character in front of a {{houseTheme}}. The character should have a {{vibe}} personality and be doing {{pose}}.
 
 Style requirements:
-- Japanese anime/manga art style with vibrant colors and soft highlights
+- Studio Ghibli art style with soft, watercolor-like textures and natural lighting
+- Hayao Miyazaki's signature aesthetic with attention to environmental details
+- Hand-drawn feel with organic, flowing lines
+- Warm, earthy color palette with subtle gradients
 - Family-friendly, all-ages appropriate
-- High quality digital illustration
+- High quality illustration with painterly details
 
 Character details:
 - Personality: {{vibe}}
-- Pose: {{pose}} (with natural hand positions and proper finger count)
-- Clothing: Simple, logo-free design  
-- Facial features: Large expressive anime eyes, friendly smile
+- Pose: {{pose}} (with natural, fluid movement)
+- Clothing: Simple, flowing design with attention to fabric movement and texture
+- Facial features: Gentle, realistic proportions with Ghibli-style eyes and warm expression
+- Hair: Natural, flowing movement with subtle highlights
 
 Setting ({{houseTheme}}):
-- Detailed architectural elements that clearly represent the theme
-- For candy house: gingerbread walls, chocolate roof, candy decorations
-- For cloud house: fluffy cloud materials, sky-like elements
-- For glass greenhouse: transparent walls, botanical elements
-- Warm, soft lighting with gentle shadows
+- Detailed architectural elements with Ghibli's signature attention to detail
+- Rich environmental storytelling with small details and magical elements
+- For candy house: whimsical gingerbread architecture with steam rising from chimneys, soft glowing windows
+- For cloud house: ethereal cloud formations with floating elements, gentle wisps of vapor
+- For glass greenhouse: intricate botanical details, magical plants, dancing light through glass
+- Natural lighting with emphasis on atmospheric perspective
+- Integration of nature elements: windswept grass, floating leaves, detailed foliage
+- Small magical details in the environment (floating lights, tiny creatures)
 
 Composition:
 - 1792x1024 landscape format (4:3 aspect ratio)
-- Full body character with complete house visible
-- Character and house positioned to utilize horizontal space
-- Foreground, midground, background depth
+- Dynamic composition with strong sense of depth and scale
+- Character integrated naturally into the environment
+- Multiple layers of depth with atmospheric perspective
+- Attention to environmental movement (wind effects, floating elements)
+- Strong emphasis on the relationship between character and environment
 - No text or logos
 - Avoid any real brands or copyrighted characters
+- Include small background details that tell a story
 
-Quality: High detail, clean lines, professional anime art quality`;
+Quality:
+- High detail with Ghibli's signature painterly style
+- Soft, watercolor-like textures and color transitions
+- Attention to light and shadow with natural gradients
+- Hand-drawn feel with organic line quality
+- Environmental storytelling through small details
+- Magical and whimsical atmosphere typical of Studio Ghibli films`;
 
 // Function to analyze face photo using GPT-4 Vision
 export async function analyzeFacePhoto(imageBuffer: Buffer, mimeType: string = "image/jpeg"): Promise<string> {
@@ -97,41 +113,56 @@ export async function analyzeFacePhoto(imageBuffer: Buffer, mimeType: string = "
   }
 }
 
-export const GENERATION_PROMPT_WITH_FACE_TEMPLATE = `Create a charming anime-style illustration featuring a cute character in front of a {{houseTheme}}. The character should have a {{vibe}} personality and be doing {{pose}}.
+export const GENERATION_PROMPT_WITH_FACE_TEMPLATE = `Create a charming Studio Ghibli style illustration featuring a whimsical character in front of a {{houseTheme}}. The character should have a {{vibe}} personality and be doing {{pose}}.
 
 Character appearance inspired by the reference:
 {{faceDescription}}
 
 Style requirements:
-- Japanese anime/manga art style with vibrant colors and soft highlights
-- Family-friendly, all-ages appropriate content
-- High quality digital illustration
-- Character should be inspired by the described features but rendered in cute anime style
+- Studio Ghibli art style with soft, watercolor-like textures and natural lighting
+- Hayao Miyazaki's signature aesthetic with attention to environmental details
+- Hand-drawn feel with organic, flowing lines
+- Warm, earthy color palette with subtle gradients
+- Family-friendly, all-ages appropriate
+- Character should be inspired by the described features but rendered in Ghibli's realistic yet magical style
 
 Character details:
 - Personality: {{vibe}}
-- Action: {{pose}} (with natural hand positions)
-- Clothing: Simple, colorful, logo-free design appropriate for children
-- Facial features: Large expressive anime eyes, friendly smile, incorporating elements from the description
-- Overall appearance: Cute, approachable anime character inspired by the provided features
+- Action: {{pose}} (with natural, fluid movement typical of Ghibli animation)
+- Clothing: Simple, flowing design with attention to fabric movement and texture
+- Facial features: Gentle, realistic proportions with Ghibli-style eyes and warm expression, incorporating elements from the description
+- Hair: Natural, flowing movement with subtle highlights
+- Overall appearance: Charming, approachable Ghibli-style character inspired by the provided features
 
 Setting ({{houseTheme}}):
-- Clear architectural elements representing the theme
-- For candy house: gingerbread walls, chocolate roof, candy decorations
-- For cloud house: fluffy cloud materials, sky-like elements  
-- For flower house: colorful flowers, garden elements
-- Warm, inviting lighting with gentle shadows
+- Detailed architectural elements with Ghibli's signature attention to detail
+- Rich environmental storytelling with small details and magical elements
+- For candy house: whimsical gingerbread architecture with steam rising from chimneys, soft glowing windows
+- For cloud house: ethereal cloud formations with floating elements, gentle wisps of vapor
+- For flower house: intricate botanical details, magical plants, dancing light through petals
+- Natural lighting with emphasis on atmospheric perspective
+- Integration of nature elements: windswept grass, floating leaves, detailed foliage
+- Small magical details in the environment (floating lights, tiny creatures)
 
 Composition:
 - 1792x1024 landscape format (4:3 aspect ratio)
-- Full body character positioned prominently in the scene
-- House structure clearly visible and integrated into the background
-- Character positioned to utilize the horizontal space effectively
-- Bright, cheerful atmosphere with good use of landscape composition
+- Dynamic composition with strong sense of depth and scale
+- Character integrated naturally into the environment
+- Multiple layers of depth with atmospheric perspective
+- Attention to environmental movement (wind effects, floating elements)
+- Strong emphasis on the relationship between character and environment
+- Ghibli-style perspective and scene composition
 - No text, logos, or brand elements
 - Child-friendly and wholesome content
+- Include small background details that tell a story
 
-Art quality: Professional anime illustration with clean lines and vibrant colors`;
+Art quality:
+- High detail with Ghibli's signature painterly style
+- Soft, watercolor-like textures and color transitions
+- Attention to light and shadow with natural gradients
+- Hand-drawn feel with organic line quality
+- Environmental storytelling through small details
+- Magical and whimsical atmosphere typical of Studio Ghibli films`;
 
 export function buildPrompt(houseTheme: string, vibe: string, pose: string): string {
   return GENERATION_PROMPT_TEMPLATE
