@@ -14,6 +14,18 @@ export function isOpenAIConfigured(): boolean {
 // OpenAI Images API の最小限のレスポンス型
 type ImageResult = { b64_json?: string; url?: string };
 
+// helper: data URL -> Uint8Array + mime
+function decodeDataUrl(dataUrl: string): { mime: string; bytes: Uint8Array } {
+  const match = /^data:([^;]+);base64,(.+)$/.exec(dataUrl);
+  if (!match) {
+    throw new Error('Invalid data URL');
+  }
+  const mime = match[1];
+  const b64 = match[2];
+  const buf = Buffer.from(b64, 'base64');
+  return { mime, bytes: new Uint8Array(buf) };
+}
+
 export const GENERATION_PROMPT_TEMPLATE = `Create a charming Studio Ghibli style illustration featuring a whimsical character in front of a {{houseTheme}}. The character should have a {{vibe}} personality and be doing {{pose}}.
 
 Style requirements:
@@ -196,15 +208,42 @@ export async function generateFinalIllustration(
   pose: string
 ): Promise<string> {
   try {
-    console.log('Generating final illustration...');
-    const response = await openai.images.generate({
-      model: "gpt-image-1",
-      prompt: `キャラクターとドリームハウスを組み合わせた、スタジオジブリ風のイラストを作成してください。キャラクターは${vibe}な性格で、${pose}のポーズをとっています。
+    console.log('Generating final illustration from two images (edit)...');
 
-スタイル要件：
-- キャラクターと家のデザインを自然に調和させる
-- ジブリ作品特有の美的センスを維持
-- 遠近感のある自然な光の表現`,
+    // Convert characterUrl to uploadable
+    let charUpload;
+    if (characterUrl.startsWith('data:')) {
+      const { mime, bytes } = decodeDataUrl(characterUrl);
+      charUpload = await toFile(bytes, 'character.png', { type: mime });
+    } else {
+      const res = await fetch(characterUrl);
+      const ab = await res.arrayBuffer();
+      charUpload = await toFile(new Uint8Array(ab), 'character.png', { type: res.headers.get('content-type') || 'image/png' });
+    }
+
+    // Convert houseUrl to uploadable
+    let houseUpload;
+    if (houseUrl.startsWith('data:')) {
+      const { mime, bytes } = decodeDataUrl(houseUrl);
+      houseUpload = await toFile(bytes, 'house.png', { type: mime });
+    } else {
+      const res = await fetch(houseUrl);
+      const ab = await res.arrayBuffer();
+      houseUpload = await toFile(new Uint8Array(ab), 'house.png', { type: res.headers.get('content-type') || 'image/png' });
+    }
+
+    const response = await openai.images.edit({
+      model: "gpt-image-1",
+      image: [houseUpload, charUpload],
+      prompt: `以下の2枚を組み合わせ、やさしい手描きアニメ風の最終イラストを作成してください。
+- 画像1: ドリームハウス（背景）。
+- 画像2: キャラクター（前景）。
+
+要件：
+- キャラクターが家の前に自然に立っている。
+- ${vibe}な雰囲気、${pose}のポーズ。
+- 自然な遠近感と光、柔らかな水彩タッチ、温かい色合い。
+- キャラクターの表情や配色は元画像を尊重。`,
       size: "1024x1024"
     });
 
