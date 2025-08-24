@@ -51,11 +51,29 @@ export default function HomePage() {
         body: apiFormData,
       });
 
-      const result = await response.json();
+      // Safely parse response (handle 413 and non-JSON bodies)
+      const contentType = response.headers.get('content-type') || '';
+      let result: any = null;
+      if (contentType.includes('application/json')) {
+        result = await response.json();
+      } else {
+        const text = await response.text();
+        if (!response.ok) {
+          if (response.status === 413) {
+            throw new Error('がぞうのサイズが大きすぎます (413)。3MB以下に圧縮してからもういちどためしてください。');
+          }
+          throw new Error(`サーバーエラー: ${response.status} ${text.slice(0, 200)}`);
+        }
+        try {
+          result = JSON.parse(text);
+        } catch {
+          throw new Error('サーバーから予期しない応答が返りました。しばらくしてからお試しください。');
+        }
+      }
 
       if (!response.ok) {
         console.log('API Error:', result);
-        throw new Error(result.error || "Failed to generate image");
+        throw new Error(result?.error || "Failed to generate image");
       }
 
       if (!result.url) {

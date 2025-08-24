@@ -98,6 +98,41 @@ const FileDrop: React.FC<FileDropProps> = ({
       });
 
       let processedFile = file;
+
+      // Helper: compress image with canvas
+      const compressImage = async (
+        srcFile: File,
+        maxDimension: number = 1600,
+        targetMaxBytes: number = 3 * 1024 * 1024,
+        initialQuality: number = 0.85
+      ): Promise<File> => {
+        try {
+          const imageBitmap = await createImageBitmap(srcFile);
+          const scale = Math.min(1, maxDimension / Math.max(imageBitmap.width, imageBitmap.height));
+          const width = Math.max(1, Math.round(imageBitmap.width * scale));
+          const height = Math.max(1, Math.round(imageBitmap.height * scale));
+
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          if (!ctx) return srcFile;
+          ctx.drawImage(imageBitmap, 0, 0, width, height);
+
+          let quality = initialQuality;
+          let blob: Blob | null = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', quality));
+          // Decrease quality until under target or min quality reached
+          while (blob && blob.size > targetMaxBytes && quality > 0.55) {
+            quality -= 0.1;
+            blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', quality));
+          }
+          if (!blob) return srcFile;
+          return new File([blob], srcFile.name.replace(/\.(png|webp|jpeg|jpg|heic|heif)$/i, '.jpg'), { type: 'image/jpeg' });
+        } catch (e) {
+          console.warn('Image compression skipped due to error:', e);
+          return srcFile;
+        }
+      };
       
       // More comprehensive HEIC detection
       const isHeicFile = file.type === 'image/heic' || 
@@ -137,6 +172,13 @@ const FileDrop: React.FC<FileDropProps> = ({
         }
       }
       
+      // Compress large files to avoid 413
+      if (processedFile.size > 3 * 1024 * 1024) {
+        console.log('Compressing large image. Original size (bytes):', processedFile.size);
+        processedFile = await compressImage(processedFile);
+        console.log('Compressed image size (bytes):', processedFile.size);
+      }
+
       onFileSelect(processedFile);
     } catch (error) {
       console.error('File processing failed:', error);
@@ -265,7 +307,7 @@ const FileDrop: React.FC<FileDropProps> = ({
           </p>
           <div className="bg-white/90 rounded-full px-4 py-2 mx-auto inline-block border-2 border-pink-200">
             <p className="text-xs text-gray-600">
-              📱 推奨: PNG, JPG, WebP (最大6MB)
+              📱 推奨: PNG, JPG, WebP (最大3MB)
             </p>
           </div>
           <div className="bg-yellow-100/80 rounded-lg px-3 py-2 mx-auto inline-block border border-yellow-300 mt-2">

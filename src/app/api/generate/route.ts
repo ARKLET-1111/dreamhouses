@@ -82,11 +82,11 @@ export async function POST(request: NextRequest): Promise<NextResponse<GenerateR
       );
     }
 
-    // Check file size (6MB limit)
-    if (faceImage.size > 6 * 1024 * 1024) {
+    // Check file size (4MB limit to avoid 413 on platforms)
+    if (faceImage.size > 4 * 1024 * 1024) {
       console.log('File size too large:', faceImage.size);
       return NextResponse.json(
-        { error: "File size too large. Maximum 6MB allowed." },
+        { error: "アップロード画像が大きすぎます。最大 4MB までにしてください。" },
         { status: 400 }
       );
     }
