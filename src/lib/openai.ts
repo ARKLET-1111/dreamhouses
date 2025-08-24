@@ -10,6 +10,9 @@ export function isOpenAIConfigured(): boolean {
   return !!process.env.OPENAI_API_KEY;
 }
 
+// OpenAI Images API の最小限のレスポンス型
+type ImageResult = { b64_json?: string; url?: string };
+
 export const GENERATION_PROMPT_TEMPLATE = `Create a charming Studio Ghibli style illustration featuring a whimsical character in front of a {{houseTheme}}. The character should have a {{vibe}} personality and be doing {{pose}}.
 
 Style requirements:
@@ -125,8 +128,9 @@ ${characterDescription}
       throw new Error("No data returned from OpenAI API");
     }
 
-    const b64 = (response.data[0] as any).b64_json as string | undefined;
-    const url = (response.data[0] as any).url as string | undefined;
+    const first = response.data[0] as ImageResult;
+    const b64 = first.b64_json;
+    const url = first.url;
     if (b64) return `data:image/png;base64,${b64}`;
     if (url) return url;
     throw new Error("No image payload in response");
@@ -216,8 +220,9 @@ export async function generateHouse(theme: string): Promise<string> {
     if (!response.data || !response.data[0]) {
       throw new Error("No data returned from OpenAI API");
     }
-    const b64 = (response.data[0] as any).b64_json as string | undefined;
-    const url = (response.data[0] as any).url as string | undefined;
+    const first = response.data[0] as ImageResult;
+    const b64 = first.b64_json;
+    const url = first.url;
     if (b64) return `data:image/png;base64,${b64}`;
     if (url) return url;
     throw new Error("No image payload in response");
@@ -250,8 +255,9 @@ export async function generateFinalIllustration(
     if (!response.data || !response.data[0]) {
       throw new Error("No data returned from OpenAI API");
     }
-    const b64 = (response.data[0] as any).b64_json as string | undefined;
-    const url = (response.data[0] as any).url as string | undefined;
+    const first = response.data[0] as ImageResult;
+    const b64 = first.b64_json;
+    const url = first.url;
     if (b64) return `data:image/png;base64,${b64}`;
     if (url) return url;
     throw new Error("No image payload in response");
