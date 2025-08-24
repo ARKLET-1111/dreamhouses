@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useRef } from "react";
 import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import Form, { type FormData } from "@/components/Form";
 import ProgressCard from "@/components/ProgressCard";
@@ -48,6 +48,7 @@ export default function HomePage() {
   
   const [showErrorDialog, setShowErrorDialog] = useState(false);
   const [galleryRefreshKey, setGalleryRefreshKey] = useState(0);
+  const characterFileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFormSubmit = useCallback(async (formData: FormData) => {
     if (!formData.faceImage) return;
@@ -144,6 +145,117 @@ export default function HomePage() {
     // For regeneration, we'll just reset to form since we don't store the original image
     handleNewGeneration();
   }, [generationState.result, handleNewGeneration]);
+
+  // Shared API caller for selective regeneration (A方式)
+  const callRegenerateApi = useCallback(async (options: {
+    regenerateCharacter: boolean;
+    regenerateHouse: boolean;
+    faceFile?: File;
+  }) => {
+    if (!generationState.result) return;
+
+    setGenerationState(prev => ({ ...prev, isGenerating: true, error: null }));
+
+    try {
+      const apiFormData = new FormData();
+      apiFormData.append("houseTheme", generationState.result.houseTheme);
+      apiFormData.append("vibe", generationState.result.vibe);
+      apiFormData.append("pose", generationState.result.pose);
+
+      apiFormData.append("regenerateCharacter", String(options.regenerateCharacter));
+      apiFormData.append("regenerateHouse", String(options.regenerateHouse));
+
+      if (options.regenerateCharacter) {
+        if (!options.faceFile) {
+          throw new Error("きゃらくたーをさいせいせいするには しゃしんがひつようです");
+        }
+        apiFormData.append("faceImage", options.faceFile);
+      } else if (generationState.result.characterUrl) {
+        apiFormData.append("characterUrl", generationState.result.characterUrl);
+      }
+
+      if (!options.regenerateHouse && generationState.result.houseUrl) {
+        apiFormData.append("houseUrl", generationState.result.houseUrl);
+      }
+
+      const response = await fetch("/api/generate", {
+        method: "POST",
+        body: apiFormData,
+      });
+
+      const contentType = response.headers.get('content-type') || '';
+      let result: ApiGenerateResponse | null = null;
+      if (contentType.includes('application/json')) {
+        result = (await response.json()) as ApiGenerateResponse;
+      } else {
+        const text = await response.text();
+        if (!response.ok) {
+          if (response.status === 413) {
+            throw new Error('がぞうのサイズが大きすぎます (413)。3MB以下に圧縮してからもういちどためしてください。');
+          }
+          throw new Error(`サーバーエラー: ${response.status} ${text.slice(0, 200)}`);
+        }
+        try {
+          const parsed = JSON.parse(text) as unknown;
+          if (!isApiGenerateResponse(parsed)) {
+            throw new Error('unexpected response shape');
+          }
+          result = parsed;
+        } catch {
+          throw new Error('サーバーから予期しない応答が返りました。しばらくしてからお試しください。');
+        }
+      }
+
+      if (!response.ok) {
+        console.log('API Error:', result);
+        throw new Error(result?.error || "Failed to regenerate image");
+      }
+
+      if (!result.url) {
+        throw new Error("No image URL received");
+      }
+
+      setGenerationState(prev => ({
+        isGenerating: false,
+        result: {
+          imageUrl: result!.url,
+          characterUrl: result!.characterUrl ?? prev.result?.characterUrl,
+          houseUrl: result!.houseUrl ?? prev.result?.houseUrl,
+          houseTheme: prev.result!.houseTheme,
+          vibe: prev.result!.vibe,
+          pose: prev.result!.pose,
+        },
+        error: null,
+      }));
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "さいせいせいに しっぱいしました";
+      console.error("Regeneration failed:", error);
+      setGenerationState(prev => ({
+        isGenerating: false,
+        result: prev.result,
+        error: errorMessage,
+      }));
+      setShowErrorDialog(true);
+    }
+  }, [generationState.result]);
+
+  const handleRegenerateHouse = useCallback(async () => {
+    if (!generationState.result) return;
+    await callRegenerateApi({ regenerateCharacter: false, regenerateHouse: true });
+  }, [generationState.result, callRegenerateApi]);
+
+  const handleRegenerateCharacterStart = useCallback(() => {
+    if (!generationState.result) return;
+    characterFileInputRef.current?.click();
+  }, [generationState.result]);
+
+  const handleCharacterFileSelected = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    await callRegenerateApi({ regenerateCharacter: true, regenerateHouse: false, faceFile: file });
+    // reset input value for subsequent selections
+    if (characterFileInputRef.current) characterFileInputRef.current.value = "";
+  }, [callRegenerateApi]);
 
   const handleSaveToGallery = useCallback(async () => {
     if (!generationState.result) return;
@@ -242,6 +354,8 @@ export default function HomePage() {
             pose={generationState.result?.pose || ""}
             isVisible={!!generationState.result}
             onRegenerate={handleRegenerate}
+            onRegenerateCharacter={handleRegenerateCharacterStart}
+            onRegenerateHouse={handleRegenerateHouse}
             onNewGeneration={handleNewGeneration}
             onSaveToGallery={handleSaveToGallery}
             className="max-w-2xl mx-auto"
@@ -304,6 +418,14 @@ export default function HomePage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      {/* Hidden input for character-only regeneration */}
+      <input
+        ref={characterFileInputRef}
+        type="file"
+        accept="image/*,.heic,.HEIC,.heif,.HEIF"
+        onChange={handleCharacterFileSelected}
+        className="hidden"
+      />
     </div>
   );
 }

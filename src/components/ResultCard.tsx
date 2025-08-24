@@ -15,6 +15,8 @@ interface ResultCardProps {
   pose: string;
   isVisible: boolean;
   onRegenerate: () => void;
+  onRegenerateCharacter?: () => void;
+  onRegenerateHouse?: () => void;
   onNewGeneration: () => void;
   onSaveToGallery: () => void;
   className?: string;
@@ -29,6 +31,8 @@ const ResultCard: React.FC<ResultCardProps> = ({
   pose,
   isVisible,
   onRegenerate,
+  onRegenerateCharacter,
+  onRegenerateHouse,
   onNewGeneration,
   onSaveToGallery,
   className,
@@ -190,6 +194,30 @@ const ResultCard: React.FC<ResultCardProps> = ({
               <RefreshCw className="h-4 w-4" />
               再生成
             </Button>
+
+            {onRegenerateCharacter && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={onRegenerateCharacter}
+                className="flex items-center gap-2"
+              >
+                <RefreshCw className="h-4 w-4" />
+                👤 きゃらくたーだけ
+              </Button>
+            )}
+
+            {onRegenerateHouse && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={onRegenerateHouse}
+                className="flex items-center gap-2"
+              >
+                <RefreshCw className="h-4 w-4" />
+                🏠 はうすだけ
+              </Button>
+            )}
 
             <Button
               variant="outline"
