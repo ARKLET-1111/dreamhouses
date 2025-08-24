@@ -31,8 +31,9 @@ Setting ({{houseTheme}}):
 - Warm, soft lighting with gentle shadows
 
 Composition:
-- 1024x1024 square format
+- 1792x1024 landscape format (4:3 aspect ratio)
 - Full body character with complete house visible
+- Character and house positioned to utilize horizontal space
 - Foreground, midground, background depth
 - No text or logos
 - Avoid any real brands or copyrighted characters
@@ -122,10 +123,11 @@ Setting ({{houseTheme}}):
 - Warm, inviting lighting with gentle shadows
 
 Composition:
-- 1024x1024 square format
-- Full body character prominently featured
-- House clearly visible in background
-- Bright, cheerful atmosphere
+- 1792x1024 landscape format (4:3 aspect ratio)
+- Full body character positioned prominently in the scene
+- House structure clearly visible and integrated into the background
+- Character positioned to utilize the horizontal space effectively
+- Bright, cheerful atmosphere with good use of landscape composition
 - No text, logos, or brand elements
 - Child-friendly and wholesome content
 
