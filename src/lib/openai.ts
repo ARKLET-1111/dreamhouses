@@ -40,13 +40,19 @@ Composition:
 Quality: High detail, clean lines, professional anime art quality`;
 
 // Function to analyze face photo using GPT-4 Vision
-export async function analyzeFacePhoto(imageBuffer: Buffer): Promise<string> {
+export async function analyzeFacePhoto(imageBuffer: Buffer, mimeType: string = "image/jpeg"): Promise<string> {
   try {
     console.log('Converting image buffer to base64...');
     const base64Image = imageBuffer.toString('base64');
     console.log('Base64 conversion completed, length:', base64Image.length);
     
-    console.log('Calling GPT-4o for face analysis...');
+    // Determine the correct MIME type
+    let imageMimeType = mimeType;
+    if (mimeType.includes('heic') || mimeType.includes('heif')) {
+      imageMimeType = 'image/jpeg'; // GPT-4 Vision doesn't support HEIC, so we treat as JPEG
+    }
+    
+    console.log('Calling GPT-4o for face analysis with MIME type:', imageMimeType);
     const response = await openai.chat.completions.create({
       model: "gpt-4o",
       messages: [
@@ -60,7 +66,7 @@ export async function analyzeFacePhoto(imageBuffer: Buffer): Promise<string> {
             {
               type: "image_url",
               image_url: {
-                url: `data:image/jpeg;base64,${base64Image}`,
+                url: `data:${imageMimeType};base64,${base64Image}`,
                 detail: "low"
               }
             }
@@ -92,37 +98,38 @@ export async function analyzeFacePhoto(imageBuffer: Buffer): Promise<string> {
 
 export const GENERATION_PROMPT_WITH_FACE_TEMPLATE = `Create a charming anime-style illustration featuring a cute character in front of a {{houseTheme}}. The character should have a {{vibe}} personality and be doing {{pose}}.
 
-Character appearance based on the reference photo:
+Character appearance inspired by the reference:
 {{faceDescription}}
 
 Style requirements:
 - Japanese anime/manga art style with vibrant colors and soft highlights
-- Family-friendly, all-ages appropriate
+- Family-friendly, all-ages appropriate content
 - High quality digital illustration
-- Character should resemble the described features but in cute anime style
+- Character should be inspired by the described features but rendered in cute anime style
 
 Character details:
 - Personality: {{vibe}}
-- Pose: {{pose}} (with natural hand positions and proper finger count)
-- Clothing: Simple, logo-free design  
-- Facial features: Large expressive anime eyes, friendly smile, incorporating the described characteristics
-- Appearance: Based on the provided description but stylized as cute anime character
+- Action: {{pose}} (with natural hand positions)
+- Clothing: Simple, colorful, logo-free design appropriate for children
+- Facial features: Large expressive anime eyes, friendly smile, incorporating elements from the description
+- Overall appearance: Cute, approachable anime character inspired by the provided features
 
 Setting ({{houseTheme}}):
-- Detailed architectural elements that clearly represent the theme
+- Clear architectural elements representing the theme
 - For candy house: gingerbread walls, chocolate roof, candy decorations
-- For cloud house: fluffy cloud materials, sky-like elements
-- For glass greenhouse: transparent walls, botanical elements
-- Warm, soft lighting with gentle shadows
+- For cloud house: fluffy cloud materials, sky-like elements  
+- For flower house: colorful flowers, garden elements
+- Warm, inviting lighting with gentle shadows
 
 Composition:
 - 1024x1024 square format
-- Full body character with complete house visible
-- Foreground, midground, background depth
-- No text or logos
-- Avoid any real brands or copyrighted characters
+- Full body character prominently featured
+- House clearly visible in background
+- Bright, cheerful atmosphere
+- No text, logos, or brand elements
+- Child-friendly and wholesome content
 
-Quality: High detail, clean lines, professional anime art quality`;
+Art quality: Professional anime illustration with clean lines and vibrant colors`;
 
 export function buildPrompt(houseTheme: string, vibe: string, pose: string): string {
   return GENERATION_PROMPT_TEMPLATE

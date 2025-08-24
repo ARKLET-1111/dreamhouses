@@ -53,25 +53,36 @@ const FileDrop: React.FC<FileDropProps> = ({
   const convertHeicToJpeg = async (file: File): Promise<File> => {
     try {
       setIsConverting(true);
+      console.log('Starting HEIC conversion for file:', file.name, 'size:', file.size);
       
       // Dynamic import to avoid SSR issues
       const heic2any = await import('heic2any');
+      console.log('heic2any loaded successfully');
       
+      // Check if the conversion function exists
+      if (!heic2any.default) {
+        throw new Error('heic2any library not properly loaded');
+      }
+      
+      console.log('Starting conversion...');
       const convertedBlob = await heic2any.default({
         blob: file,
         toType: "image/jpeg",
         quality: 0.8
       }) as Blob;
       
+      console.log('Conversion completed, blob size:', convertedBlob.size);
+      
       const convertedFile = new File([convertedBlob], 
         file.name.replace(/\.heic$/i, '.jpg'), 
         { type: "image/jpeg" }
       );
       
+      console.log('Converted file created:', convertedFile.name, convertedFile.type);
       return convertedFile;
     } catch (error) {
-      console.error('HEIC conversion failed:', error);
-      throw new Error('HEIC変換に失敗しました');
+      console.error('HEIC conversion failed with details:', error);
+      throw new Error(`HEIC変換に失敗しました: ${(error as Error).message}`);
     } finally {
       setIsConverting(false);
     }
@@ -98,13 +109,26 @@ const FileDrop: React.FC<FileDropProps> = ({
       
       if (isHeicFile) {
         console.log('Converting HEIC file...');
-        processedFile = await convertHeicToJpeg(file);
-        console.log('HEIC conversion completed:', {
-          originalName: file.name,
-          convertedName: processedFile.name,
-          convertedType: processedFile.type,
-          convertedSize: processedFile.size
-        });
+        try {
+          processedFile = await convertHeicToJpeg(file);
+          console.log('HEIC conversion completed:', {
+            originalName: file.name,
+            convertedName: processedFile.name,
+            convertedType: processedFile.type,
+            convertedSize: processedFile.size
+          });
+        } catch (conversionError) {
+          console.error('HEIC conversion failed, trying direct upload:', conversionError);
+          
+          // Try to use the original HEIC file directly (some browsers might support it)
+          console.log('Attempting to use original HEIC file directly...');
+          if (confirm('HEIC変換に失敗しました。元のファイルをそのまま使用しますか？\n\n※ 代替方法：\n1. iPhoneの設定 > カメラ > フォーマット を「互換性優先」に変更\n2. 写真アプリでJPEG形式で保存し直す\n\n「OK」で元ファイルを使用、「キャンセル」で中止')) {
+            processedFile = file; // Use original HEIC file
+            console.log('Using original HEIC file');
+          } else {
+            throw conversionError;
+          }
+        }
       }
       
       onFileSelect(processedFile);
