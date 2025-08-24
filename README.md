@@ -1,36 +1,191 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Dream House 🏠✨
 
-## Getting Started
+あなたの顔写真とカスタムハウステーマを使用して、アニメ調のイラストを生成するAI搭載キャラクター＆ハウスイラストジェネレーター。
 
-First, run the development server:
+## 主な機能
+
+- 🎨 **AI画像生成**: OpenAIのDALL-E 3を使用した高品質イラスト生成
+- 🏠 **カスタムハウステーマ**: お菓子の家、雲の家、ガラスの温室など、ユニークな家を作成
+- 👤 **顔写真の統合**: 写真をアップロードして、パーソナライズされたアニメキャラクターを作成
+- 🎭 **キャラクターカスタマイズ**: 雰囲気（元気、上品、クール）とポーズを選択可能
+- 📱 **レスポンシブデザイン**: デスクトップとモバイル端末で快適に動作
+- 🖼️ **ギャラリーシステム**: IndexedDBを使用して最近の作品をローカルに保存
+- ⚡ **リアルタイム進捗**: 生成中の進捗状況を視覚的に表示
+
+- 🎯 **高品質**: 1024×1024ピクセルのアニメ調イラストを生成
+
+## 技術スタック
+
+- **フレームワーク**: Next.js 14 (Appルーター)
+- **言語**: TypeScript
+- **スタイリング**: Tailwind CSS + shadcn/ui
+- **AIサービス**: OpenAI DALL-E 3 API
+- **ストレージ**: クライアントサイドギャラリー用IndexedDB
+- **デプロイメント**: Vercel対応設定
+
+## 必要条件
+
+- Node.js 18以上
+- npmまたはpnpm
+- OpenAI APIキー
+
+## インストール
+
+1. **依存関係のインストール**
+   ```bash
+   npm install
+   # または
+   pnpm install
+   ```
+
+2. **環境変数の設定**
+   ```bash
+   cp .env.local.example .env.local
+   ```
+   
+   `.env.local`を編集してOpenAI APIキーを追加:
+   ```env
+   OPENAI_API_KEY=your_openai_api_key_here
+   ```
+
+3. **生成画像用ディレクトリの作成**
+   ```bash
+   mkdir -p public/generated
+   ```
+
+## OpenAI APIキーの取得方法
+
+1. [OpenAI Platform](https://platform.openai.com/)にアクセス
+2. アカウントにサインアップまたはログイン
+3. [API Keys](https://platform.openai.com/api-keys)に移動
+4. "Create new secret key"をクリック
+5. キーをコピーして`.env.local`ファイルに追加
+
+**注意**: OpenAIアカウントに画像生成用の十分なクレジットがあることを確認してください。
+
+## 開発
+
+開発サーバーの起動:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
+# または
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+ブラウザで[http://localhost:3000](http://localhost:3000)を開きます。
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 使用方法
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. **ハウステーマの入力**: 作成したい家のタイプを記述（例：「お菓子の家」、「雲の家」、「ガラスの温室」）
 
-## Learn More
+2. **顔写真のアップロード**: 
+   - 対応フォーマット: PNG, JPG, WebP
+   - 最大サイズ: 6MB
+   - 最適な結果: 正面向きの鮮明な写真
 
-To learn more about Next.js, take a look at the following resources:
+3. **キャラクタースタイルの選択**:
+   - **雰囲気**: 元気、上品、クールから選択
+   - **ポーズ**: 手を振る、ピース、腰に手から選択
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+4. **利用規約への同意**: 個人利用に関する同意チェックボックスにチェック
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+5. **生成**: 生成ボタンをクリックして、カスタムイラストを待つ
 
-## Deploy on Vercel
+6. **ダウンロード＆保存**: 画像をダウンロードまたはローカルギャラリーに保存
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## プロジェクト構造
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+src/
+├── app/
+│   ├── api/generate/route.ts    # 画像生成APIエンドポイント
+│   ├── globals.css              # Tailwindを使用したグローバルスタイル
+│   └── page.tsx                 # メインアプリケーションページ
+├── components/
+│   ├── FileDrop.tsx             # ドラッグ＆ドロップファイルアップロード
+│   ├── Form.tsx                 # メイン入力フォーム
+│   ├── Gallery.tsx              # ローカル画像ギャラリー
+│   ├── ProgressCard.tsx         # 生成進捗表示
+│   ├── ResultCard.tsx           # 生成画像表示
+│   └── ui/                      # shadcn/uiコンポーネント
+└── lib/
+    ├── idb.ts                   # IndexedDBユーティリティ
+    ├── openai.ts                # OpenAIクライアント設定
+    ├── rateLimit.ts             # レート制限ロジック
+    ├── utils.ts                 # ユーティリティ関数
+    └── validation.ts            # 入力バリデーション
+```
+
+## APIエンドポイント
+
+### POST /api/generate
+
+ユーザー入力に基づいてアニメ調イラストを生成します。
+
+**リクエスト (FormData)**:
+- `houseTheme`: string (1-120文字)
+- `vibe`: "元気" | "上品" | "クール"
+- `pose`: "手を振る" | "ピース" | "腰に手"
+- `faceImage`: File (PNG/JPG/WebP, 最大6MB)
+
+**レスポンス**:
+```json
+{
+  "url": "/generated/uuid.png"
+}
+```
+
+## セキュリティとプライバシー
+
+- **サーバー保存なし**: 顔写真はメモリ上でのみ処理
+
+- **入力バリデーション**: すべてのユーザー入力をサニタイズ
+- **ログなし**: 顔写真と個人データはログに記録されない
+- **ローカルギャラリー**: 画像はブラウザのローカルストレージにのみ保存
+
+## Vercelへのデプロイ
+
+1. **Vercelとの接続**:
+   ```bash
+   npx vercel
+   ```
+
+2. **環境変数の設定**:
+   - Vercelダッシュボードに移動
+   - 環境変数セクションで`OPENAI_API_KEY`を追加
+
+3. **デプロイ**:
+   ```bash
+   npx vercel --prod
+   ```
+
+## トラブルシューティング
+
+### よくある問題
+
+1. **"APIキーが見つかりません"**
+   - `.env.local`に`OPENAI_API_KEY`が設定されているか確認
+   - 開発サーバーを再起動
+
+2. **"生成に失敗しました"**
+   - OpenAIアカウントに十分なクレジットがあるか確認
+   - APIキーが有効か確認
+   - 画像ファイルサイズを確認（最大6MB）
+
+
+
+## ライセンス
+
+このプロジェクトは教育および個人利用のみを目的としています。商用利用は禁止されています。
+
+## 免責事項
+
+- 生成された画像は個人利用のみ
+- 機密情報や不適切な写真のアップロード禁止
+- AIは常に完璧な結果を生成するとは限りません
+- APIコストはユーザーの責任となります
+
+---
+
+**Dream House** - 想像力とAIパワードクリエイティビティが出会う場所！🏠✨
