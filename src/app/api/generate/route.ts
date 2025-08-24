@@ -113,11 +113,24 @@ export async function POST(request: NextRequest): Promise<NextResponse<GenerateR
       console.log('Generating character...');
       characterUrl = await generateCharacter(imageBuffer, faceImage.type);
       console.log('Character generation completed');
-    } catch (error) {
-      console.error('Character generation failed:', error);
+    } catch (error: unknown) {
+      const err = error as Record<string, unknown>;
+      console.error('Character generation failed:', {
+        message: err.message,
+        code: err.code,
+        type: err.type,
+        status: err.status,
+        stack: err.stack,
+      });
+      const status = (typeof err.status === 'number' && err.status) || 500;
       return NextResponse.json(
-        { error: "Failed to generate character" },
-        { status: 500 }
+        {
+          error: "Failed to generate character",
+          message: (err.message as string) || String(error),
+          code: err.code,
+          type: err.type,
+        },
+        { status }
       );
     }
 
